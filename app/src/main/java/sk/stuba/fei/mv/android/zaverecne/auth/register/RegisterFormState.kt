@@ -1,10 +1,11 @@
-package sk.stuba.fei.mv.android.zaverecne.auth.login
+package sk.stuba.fei.mv.android.zaverecne.auth.register
 
 /**
  * Data validation state of the login form.
  */
-data class LoginFormState(
+data class RegisterFormState(
     val usernameError: Int? = null,
     val passwordError: Int? = null,
+    val emailError: Int? = null,
     val isDataValid: Boolean = false
 )

@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.helloworld.ui.login.LoginFormState
-import com.example.helloworld.ui.login.LoginResult
+
+
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.network.Result
