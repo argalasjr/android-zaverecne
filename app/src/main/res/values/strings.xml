@@ -45,4 +45,6 @@
     <string name="pick_video">Pick video</string>
     <string name="capture_video">Capture video</string>
     <string name="postedOnText">Posted On : </string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_password">invalid password</string>
 </resources>
