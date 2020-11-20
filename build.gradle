@@ -7,6 +7,8 @@ buildscript {
         gradleVersion = '4.0.1'
         version_navigation = '1.0.0'
         version_recyclerview = "1.1.0"
+        version_moshi = "1.9.3"
+        version_retrofit = "2.9.0"
         dataBindingCompilerVersion = gradleVersion // Always need to be the same.
     }
     repositories {
