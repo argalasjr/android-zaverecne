@@ -8,22 +8,22 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 class FeedFragment : Fragment() {
-
-    private val viewModel: FeedViewModel by lazy {
-        ViewModelProvider(this).get(FeedViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding = FeedFragmentBinding.inflate(inflater)
+        val application = requireNotNull(this.activity).application
+        val viewModelFactory = FeedViewModelFactory(application)
+        val feedViewModel = ViewModelProvider(this, viewModelFactory).get(FeedViewModel::class.java)
 
         binding.lifecycleOwner = this
 
-        binding.viewModel = viewModel
+        binding.viewModel = feedViewModel
 
         return binding.root
     }

@@ -83,7 +83,7 @@ object MasterRepository {
 
     suspend fun existsUser(userName: String): UserExistsResult {
         val req = createJsonRequestBody(
-            "action" to "register",
+            "action" to "exists",
             "apikey" to apiKey,
             "username" to userName
         )
@@ -94,7 +94,7 @@ object MasterRepository {
     // https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
     private fun createJsonRequestBody(vararg params: Pair<String, String>) =
         RequestBody.create(
-            okhttp3.MediaType.parse("application/json; charset=utf-8"),
+            okhttp3.MediaType.parse("application/json"),
             JSONObject(mapOf(*params)).toString()
         )
 }
