@@ -4,7 +4,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
@@ -42,13 +41,22 @@ interface ApiService {
     @POST("service.php")
     suspend fun fetchUserPosts(@Body params: RequestBody): List<UserPostResult>
 
+    @POST("service.php")
+    suspend fun fetchUserProfile(@Body params: RequestBody): UserResult
+
     @Multipart
     @POST("upload.php")
-    suspend fun uploadProfilePicture(@Part file: MultipartBody.Part, @Part params: MultipartBody.Part): ResponseBody
+    suspend fun uploadProfilePicture(@Part file: MultipartBody.Part, @Part params: MultipartBody.Part): UserActionResult
+
+    @POST("service.php")
+    suspend fun removeProfilePicture(@Body params: RequestBody): UserActionResult
 
     @Multipart
     @POST("post.php")
     suspend fun uploadPost(@Part file: MultipartBody.Part, @Part params: MultipartBody.Part): UserPostResult
+
+    @POST("service.php")
+    suspend fun removePost(@Body params: RequestBody): UserActionResult
 }
 
 object Api {
