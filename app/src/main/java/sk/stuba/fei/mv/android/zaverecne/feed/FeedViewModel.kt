@@ -6,7 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
+import java.io.*
+
 
 class FeedViewModel(application: Application) : AndroidViewModel(application) {
     private val _posts = MutableLiveData<List<FeedPost>>()
@@ -20,16 +23,53 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
         get() = _status
 
     private val repo = MasterRepository(application)
+    private val context = application
 
 //    fun test() {
 //        viewModelScope.launch {
-//            val resp = repo.existsUser("test1")
-//            println(resp)
+//            val t: File? = createFileFromResource(R.drawable.ic_broken_image, "test.jpg")
+//            t?.let{
+//                val resp = repo.uploadProfilePicture("54fda9ca921534d3d33c3aa0716af62f", it)
+//                println(resp)
+//            }
+//
+//
+////            val dir: File? = context.getExternalFilesDir("Pictures/")
+////            dir?.let {
+////                val f: File = File(it, "test.jpg")
+////                f.let {
+////                    val resp = repo.uploadPost("54fda9ca921534d3d33c3aa0716af62f", it)
+////                    println(resp)
+////                }
+////            }
+//
+////            val resp = repo.existsUser("test1")
+////            println(resp)
 //        }
 //    }
 
+    fun createFileFromResource(resId: Int, fileName: String): File? {
+        var f: File?
+        try {
+            f = File(context.cacheDir.toString() + File.separator + fileName)
+            val `is`: InputStream = context.resources.openRawResource(resId)
+            val out: OutputStream = FileOutputStream(f)
+            var bytesRead: Int
+            val buffer = ByteArray(1024)
+            while (`is`.read(buffer).also { bytesRead = it } > 0) {
+                out.write(buffer, 0, bytesRead)
+            }
+            out.close()
+            `is`.close()
+        } catch (ex: IOException) {
+            f = null
+        }
+        return f
+    }
+
     init {
         getUserPosts()
+//        test()
     }
 
     private fun getUserPosts() {
