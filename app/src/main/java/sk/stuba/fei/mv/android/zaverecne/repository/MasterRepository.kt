@@ -8,6 +8,7 @@ import sk.stuba.fei.mv.android.zaverecne.database.UserDatabase
 import sk.stuba.fei.mv.android.zaverecne.database.UserDatabaseDao
 import sk.stuba.fei.mv.android.zaverecne.network.Api
 import sk.stuba.fei.mv.android.zaverecne.network.UserExistsResult
+import sk.stuba.fei.mv.android.zaverecne.network.UserPostResult
 import sk.stuba.fei.mv.android.zaverecne.network.UserResult
 
 object MasterRepository {
@@ -88,6 +89,15 @@ object MasterRepository {
             "username" to userName
         )
         return Api.retrofitService.existsUser(req)
+    }
+
+    suspend fun fetchUserPosts(token: String): List<UserPostResult> {
+        val req = createJsonRequestBody(
+            "action" to "posts",
+            "apikey" to apiKey,
+            "token" to token
+        )
+        return Api.retrofitService.fetchUserPosts(req)
     }
 
 

@@ -34,6 +34,9 @@ interface ApiService {
 
     @POST("service.php")
     suspend fun existsUser(@Body params: RequestBody): UserExistsResult
+
+    @POST("service.php")
+    suspend fun fetchUserPosts(@Body params: RequestBody): List<UserPostResult>
 }
 
 object Api {

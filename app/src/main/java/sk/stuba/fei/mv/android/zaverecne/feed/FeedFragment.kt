@@ -25,6 +25,10 @@ class FeedFragment : Fragment() {
 
         binding.viewModel = feedViewModel
 
+        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener{
+
+        })
+
         return binding.root
     }
 }
