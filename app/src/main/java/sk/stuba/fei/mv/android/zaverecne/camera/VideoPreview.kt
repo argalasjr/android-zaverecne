@@ -1,7 +1,6 @@
 package sk.stuba.fei.mv.android.zaverecne.camera
 
 import android.app.Dialog
-import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -13,35 +12,26 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_video_preview.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 import sk.stuba.fei.mv.android.zaverecne.MainActivity
 import sk.stuba.fei.mv.android.zaverecne.R
-import sk.stuba.fei.mv.android.zaverecne.feed.FeedFragment
 import java.io.File
-import java.util.*
 
 
 class VideoPreview : AppCompatActivity() {
 
     private var isSaved = false
-    private lateinit var exoPlayer: SimpleExoPlayer
     var TAG = "Video Preview"
     private var mFullScreenDialog: Dialog? = null
-    private var videoUri: Uri? = null
+    private lateinit var videoUri: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +41,12 @@ class VideoPreview : AppCompatActivity() {
             window.insetsController?.hide(WindowInsets.Type.statusBars())
         } else {
             window.setFlags(
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
         //get data from intent
-        videoUri= intent.data
+        videoUri= intent.data!!
 
         Log.d(TAG, "video uri: " + videoUri)
 
@@ -70,7 +60,7 @@ class VideoPreview : AppCompatActivity() {
             exo_save.setEnabled(false)
             exo_save.setImageDrawable(resIcon)
             isSaved = true
-            val intent = Intent (this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
             startActivity(intent)
         })
@@ -79,13 +69,14 @@ class VideoPreview : AppCompatActivity() {
 
     private fun setRetake(): Boolean {
 
-            if (videoUri != null) {
-                val file = File(videoUri.toString())
+                val file = File(videoUri.path)
                 if (file.exists()) {
-                    finish()
+                    val intent = Intent(this, CameraAcitivty::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
+                    startActivity(intent)
                     return file.delete()
                 }
-        }
+
         return false
     }
 
@@ -108,11 +99,11 @@ class VideoPreview : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         (exoplayerView.parent as ViewGroup).removeView(exoplayerView)
         this.mFullScreenDialog!!.addContentView(
-                exoplayerView,
-                ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
+            exoplayerView,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         )
         //mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(VideoViewer.this, R.mipmap.ic_fullscreen_skrink_foreground));
         this.mFullScreenDialog!!.show()
@@ -133,31 +124,27 @@ class VideoPreview : AppCompatActivity() {
         super.onStop()
     }
 
-    private val bandwidthMeter by lazy {
-        DefaultBandwidthMeter()
-    }
-
-    private val trackSelectionFactory by lazy {
-        AdaptiveTrackSelection.Factory(bandwidthMeter)
-    }
 
     private val trackSelection by lazy {
-        DefaultTrackSelector(trackSelectionFactory)
+        DefaultTrackSelector(this);
     }
 
     private val simpleExoPlayer by lazy {
-        ExoPlayerFactory.newSimpleInstance(this, trackSelection)
+        SimpleExoPlayer.Builder(this)
+            .setTrackSelector(trackSelection)
+            .build()
     }
 
     private fun startExoPlayer() {
         exoplayerView.controllerAutoShow = false
         exoplayerView.player = simpleExoPlayer
-        simpleExoPlayer.prepare(videoMediaSource)
+        simpleExoPlayer.setMediaSource(videoMediaSource)
+        simpleExoPlayer.prepare()
         simpleExoPlayer.playWhenReady = true
     }
 
     private val applicationName by lazy {
-        this.packageManager?.let { this.applicationInfo?.loadLabel(it).toString() }
+        this.packageManager.let { this.applicationInfo.loadLabel(it).toString() }
     }
 
     private val dataSourceFactory by lazy {
@@ -166,7 +153,7 @@ class VideoPreview : AppCompatActivity() {
 
     private val videoMediaSource by lazy {
         ProgressiveMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(videoUri)
+            .createMediaSource(MediaItem.fromUri(videoUri))
     }
 
 }

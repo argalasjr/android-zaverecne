@@ -156,11 +156,11 @@ class CameraAcitivty : AppCompatActivity(){
         return result == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onResume() {
+    override fun onPause() {
         if (checkPermission()) {
             camera.open()
         }
-        super.onResume()
+        super.onPause()
     }
 
     private fun rotateFlipCameraIcon() {
@@ -213,6 +213,8 @@ class CameraAcitivty : AppCompatActivity(){
         chronometer!!.handler.post { chronometer.visibility = View.INVISIBLE }
         mIsRecording = false
         camera.stopVideo() //ukoncenie zaznamenavania
+        flip_facing_camera.visibility = View.VISIBLE
+
     }
 
     @Throws(CameraAccessException::class)
@@ -229,7 +231,7 @@ class CameraAcitivty : AppCompatActivity(){
     }
 
     private fun captureVideo() {
-        if (!camera.isTakingVideo()) {
+        if (!camera.isTakingVideo) {
             camera.takeVideo(File(mVideoFileName.toString()))
         } else {
 
@@ -245,7 +247,7 @@ class CameraAcitivty : AppCompatActivity(){
         }
 
 //        val aExtDcimDir = File(aDirArray[0],null)
-        mVideoFolder = aDirArray.get(0)
+        mVideoFolder = aDirArray[0]
         if (!mVideoFolder!!.exists()) {
             mVideoFolder!!.mkdirs()
 

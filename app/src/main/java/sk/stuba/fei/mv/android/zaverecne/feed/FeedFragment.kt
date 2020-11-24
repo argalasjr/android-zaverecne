@@ -36,9 +36,7 @@ class FeedFragment : Fragment() {
         })
 
 //
-
-
-        speedDial.addActionItem(
+        binding.speedDial.addActionItem(
             SpeedDialActionItem.Builder(
                 R.id.recordVideo,
                 R.drawable.ic_baseline_videocam_24
@@ -48,7 +46,7 @@ class FeedFragment : Fragment() {
                 .create()
         )
 
-        speedDial.addActionItem(
+        binding.speedDial.addActionItem(
             SpeedDialActionItem.Builder(
                 R.id.openVideo,
                 R.drawable.ic_baseline_video_library_24
@@ -59,7 +57,7 @@ class FeedFragment : Fragment() {
         )
 
 
-        speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
+        binding.speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
             when (speedDialActionItem.id) {
                 R.id.recordVideo -> {
                     captureVideo()
