@@ -37,6 +37,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
 fun Context.toast(text: String) {
@@ -70,6 +71,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
 //https://medium.com/mindorks/working-with-exoplayer-the-clean-way-and-customization-fac81e5d39ba
 @BindingAdapter(value = ["video", "thumbnail"], requireAll = false)
 fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
+    val repo = MasterRepository(context)
     videoSrc?.let {
         val player = SimpleExoPlayer.Builder(context).build()
         player.playWhenReady = false
@@ -77,7 +79,8 @@ fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
         setKeepContentOnPlayerReset(true)
         this.useController = true
 
-        val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(videoSrc))
+        val fullUrl = repo.mediaUrlBase + videoSrc
+        val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
         val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("Demo")).createMediaSource(mediaItem)
         player.setMediaSource(mediaSource)
         this.player = player

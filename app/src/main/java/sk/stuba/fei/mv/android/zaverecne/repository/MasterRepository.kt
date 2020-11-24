@@ -18,6 +18,10 @@ object MasterRepository {
 
     // TODO: presunut API kluc do .properties suboru
     private val apiKey = "fL5pP7jH4uM0lE6jP2gD0xY2jJ2nL4"
+    private val _mediaUrlBase: String = "http://api.mcomputing.eu/mobv/uploads/"
+
+    val mediaUrlBase: String
+            get() = _mediaUrlBase
 
     operator fun invoke(context: Context): MasterRepository {
         userDao = UserDatabase.getInstance(context).userDatabaseDao
