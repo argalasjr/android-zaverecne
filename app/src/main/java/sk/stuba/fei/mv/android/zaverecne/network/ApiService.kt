@@ -53,7 +53,7 @@ interface ApiService {
 
     @Multipart
     @POST("post.php")
-    suspend fun uploadPost(@Part file: MultipartBody.Part, @Part params: MultipartBody.Part): UserPostResult
+    suspend fun uploadPost(@Part file: MultipartBody.Part, @Part params: MultipartBody.Part): UserActionResult
 
     @POST("service.php")
     suspend fun removePost(@Body params: RequestBody): UserActionResult

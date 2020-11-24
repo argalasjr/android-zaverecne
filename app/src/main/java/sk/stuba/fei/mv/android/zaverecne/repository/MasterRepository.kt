@@ -149,7 +149,7 @@ object MasterRepository {
         return Api.retrofitService.removeProfilePicture(req)
     }
 
-    suspend fun uploadPost(token: String, toUpload: File): UserPostResult {
+    suspend fun uploadPost(token: String, toUpload: File): UserActionResult {
 
         val dataReq = createJsonRequestBody(
             "apikey" to apiKey,
@@ -175,15 +175,13 @@ object MasterRepository {
         return Api.retrofitService.uploadPost(videoPart, dataPart)
     }
 
-    suspend fun removePost(token: String, postId: Int): UserActionResult {
-        val paramMap =
-            mapOf(
-                "action" to "deletePost",
-                "apikey" to apiKey,
-                "token" to token,
-                "id" to postId
-            )
-        val req = createJsonRequestBody(paramMap)
+    suspend fun removePost(token: String, postId: String): UserActionResult {
+        val req = createJsonRequestBody(
+            "action" to "deletePost",
+            "apikey" to apiKey,
+            "token" to token,
+            "id" to postId
+        )
         return Api.retrofitService.removePost(req)
     }
 
@@ -193,12 +191,6 @@ object MasterRepository {
         RequestBody.create(
             okhttp3.MediaType.parse("application/json"),
             JSONObject(mapOf(*params)).toString()
-        )
-
-    private fun createJsonRequestBody(paramMap: Map<String, Any>) =
-        RequestBody.create(
-            okhttp3.MediaType.parse("application/json"),
-            JSONObject(paramMap).toString()
         )
 
     private fun createVideoRequestBody(file: File) =
