@@ -1,14 +1,16 @@
 package sk.stuba.fei.mv.android.zaverecne.repository
 
 import android.content.Context
+import okhttp3.Headers
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
 import sk.stuba.fei.mv.android.zaverecne.database.User
 import sk.stuba.fei.mv.android.zaverecne.database.UserDatabase
 import sk.stuba.fei.mv.android.zaverecne.database.UserDatabaseDao
-import sk.stuba.fei.mv.android.zaverecne.network.Api
-import sk.stuba.fei.mv.android.zaverecne.network.UserExistsResult
-import sk.stuba.fei.mv.android.zaverecne.network.UserResult
+import sk.stuba.fei.mv.android.zaverecne.network.*
+import java.io.File
+
 
 object MasterRepository {
     private lateinit var userDao: UserDatabaseDao
@@ -34,7 +36,7 @@ object MasterRepository {
         userDao.delete(user)
     }
 
-    suspend fun dbGetUser(userName: String) : User? {
+    suspend fun dbGetUser(userName: String): User? {
         return userDao.get(userName)
     }
 
@@ -60,7 +62,11 @@ object MasterRepository {
     }
 
     // changes token as well!!
-    suspend fun changeUserPassword(oldPassword: String, newPassword: String, token: String): UserResult {
+    suspend fun changeUserPassword(
+        oldPassword: String,
+        newPassword: String,
+        token: String
+    ): UserResult {
         val req = createJsonRequestBody(
             "action" to "password",
             "apikey" to apiKey,
@@ -90,11 +96,120 @@ object MasterRepository {
         return Api.retrofitService.existsUser(req)
     }
 
+    suspend fun fetchUserPosts(token: String): List<UserPostResult> {
+        val req = createJsonRequestBody(
+            "action" to "posts",
+            "apikey" to apiKey,
+            "token" to token
+        )
+        return Api.retrofitService.fetchUserPosts(req)
+    }
+
+    suspend fun fetchUserProfile(token: String): UserResult {
+        val req = createJsonRequestBody(
+            "action" to "userProfile",
+            "apikey" to apiKey,
+            "token" to token
+        )
+        return Api.retrofitService.fetchUserProfile(req)
+    }
+
+    suspend fun uploadProfilePicture(token: String, toUpload: File): UserActionResult {
+
+        val dataReq = createJsonRequestBody(
+            "apikey" to apiKey,
+            "token" to token
+        )
+        val imageReq = createImageRequestBody(toUpload)
+
+        val imagePart = MultipartBody.Part.create(
+            Headers.of(
+                "Content-Disposition",
+                "form-data; name=\"image\"; filename=\"" + toUpload.name + "\""
+            ),
+            imageReq
+        )
+
+        val dataPart = MultipartBody.Part.create(
+            Headers.of(
+                "Content-Disposition",
+                "form-data; name=\"data\""
+            ),
+            dataReq
+        )
+        return Api.retrofitService.uploadProfilePicture(imagePart, dataPart)
+    }
+
+    suspend fun removeProfilePicture(token: String): UserActionResult {
+        val req = createJsonRequestBody(
+            "action" to "clearPhoto",
+            "apikey" to apiKey,
+            "token" to token
+        )
+        return Api.retrofitService.removeProfilePicture(req)
+    }
+
+    suspend fun uploadPost(token: String, toUpload: File): UserPostResult {
+
+        val dataReq = createJsonRequestBody(
+            "apikey" to apiKey,
+            "token" to token
+        )
+        val videoReq = createVideoRequestBody(toUpload)
+
+        val videoPart = MultipartBody.Part.create(
+            Headers.of(
+                "Content-Disposition",
+                "form-data; name=\"video\"; filename=\"" + toUpload.name + "\""
+            ),
+            videoReq
+        )
+
+        val dataPart = MultipartBody.Part.create(
+            Headers.of(
+                "Content-Disposition",
+                "form-data; name=\"data\""
+            ),
+            dataReq
+        )
+        return Api.retrofitService.uploadPost(videoPart, dataPart)
+    }
+
+    suspend fun removePost(token: String, postId: Int): UserActionResult {
+        val paramMap =
+            mapOf(
+                "action" to "deletePost",
+                "apikey" to apiKey,
+                "token" to token,
+                "id" to postId
+            )
+        val req = createJsonRequestBody(paramMap)
+        return Api.retrofitService.removePost(req)
+    }
+
 
     // https://stackoverflow.com/questions/21398598/how-to-post-raw-whole-json-in-the-body-of-a-retrofit-request
     private fun createJsonRequestBody(vararg params: Pair<String, String>) =
         RequestBody.create(
             okhttp3.MediaType.parse("application/json"),
             JSONObject(mapOf(*params)).toString()
+        )
+
+    private fun createJsonRequestBody(paramMap: Map<String, Any>) =
+        RequestBody.create(
+            okhttp3.MediaType.parse("application/json"),
+            JSONObject(paramMap).toString()
+        )
+
+    private fun createVideoRequestBody(file: File) =
+        RequestBody.create(
+            okhttp3.MediaType.parse("video/mp4"),
+            file
+        )
+
+    private fun createImageRequestBody(file: File) =
+        RequestBody.create(
+            okhttp3.MediaType.parse("image/jpeg"),
+            file
         )
 }
