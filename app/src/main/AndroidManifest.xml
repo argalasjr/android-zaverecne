@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="sk.stuba.fei.mv.android.zaverecne">
 
-    <uses-sdk tools:overrideLibrary="com.otaliastudios.opengl" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-sdk tools:overrideLibrary="com.otaliastudios.opengl" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.hardware.camera.flash"/>
@@ -31,6 +32,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
         <activity android:name=".camera.VideoPreview"
             android:screenOrientation="portrait"

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="post"
+            type="sk.stuba.fei.mv.android.zaverecne.feed.FeedPost"/>
+        <variable
+            name="callback"
+            type="sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="170dp">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/feedPostVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:padding="2dp"
+            android:scaleType="centerCrop"
+            app:video="@{post.videoSrc}"
+            app:thumbnail="@{feedPostThumbnail}"/>
+
+        <ImageView
+            android:id="@+id/feedPostThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="#fff"
+            android:scaleType="centerCrop"
+            app:thumbnail="@{post.thumbnailSrc}" />
+    </FrameLayout>
+</layout>

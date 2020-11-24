@@ -2,39 +2,43 @@ package sk.stuba.fei.mv.android.zaverecne.feed
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
+import kotlinx.android.synthetic.main.feed_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.camera.CameraAcitivty
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
 class FeedFragment : Fragment() {
-
-
-    private val viewModel: FeedViewModel by lazy {
-        ViewModelProvider(this).get(FeedViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding = FeedFragmentBinding.inflate(inflater)
+        val application = requireNotNull(this.activity).application
+        val viewModelFactory = FeedViewModelFactory(application)
+        val feedViewModel = ViewModelProvider(this, viewModelFactory).get(FeedViewModel::class.java)
 
         binding.lifecycleOwner = this
 
-        binding.viewModel = viewModel
+        binding.viewModel = feedViewModel
+
+        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener{
+
+        })
 
 //
 
 
-        binding.speedDial.addActionItem(
+        speedDial.addActionItem(
             SpeedDialActionItem.Builder(
                 R.id.recordVideo,
                 R.drawable.ic_baseline_videocam_24
@@ -44,7 +48,7 @@ class FeedFragment : Fragment() {
                 .create()
         )
 
-        binding.speedDial.addActionItem(
+        speedDial.addActionItem(
             SpeedDialActionItem.Builder(
                 R.id.openVideo,
                 R.drawable.ic_baseline_video_library_24
@@ -55,7 +59,7 @@ class FeedFragment : Fragment() {
         )
 
 
-        binding.speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
+        speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
             when (speedDialActionItem.id) {
                 R.id.recordVideo -> {
                     captureVideo()
