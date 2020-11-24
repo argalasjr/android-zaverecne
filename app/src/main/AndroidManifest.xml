@@ -41,6 +41,17 @@
             android:name=".camera.CameraAcitivty"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Design.NoActionBar" />
+        <activity
+            android:name=".gallery.GalleryRecycleView"
+            android:label="@string/gallery_recycle_view"
+            android:screenOrientation="fullSensor"
+            />
+        <activity
+            android:name=".gallery.FolderRecycleView"
+            android:label="@string/folder_view"
+            android:screenOrientation="fullSensor"
+            android:parentActivityName=".MainActivity"
+            />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

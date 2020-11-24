@@ -72,7 +72,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
 @BindingAdapter(value = ["video", "thumbnail"], requireAll = false)
 fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
     val repo = MasterRepository(context)
-    videoSrc?.let {
+    videoSrc.let {
         val player = SimpleExoPlayer.Builder(context).build()
         player.playWhenReady = false
         player.repeatMode = Player.REPEAT_MODE_ALL

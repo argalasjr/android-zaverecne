@@ -56,8 +56,7 @@ class VideoPreview : AppCompatActivity() {
         })
         exo_save.setOnClickListener(View.OnClickListener {
             val resIcon = getDrawable(R.drawable.ic_baseline_done_outline_24)
-
-            exo_save.setEnabled(false)
+            exo_save.isEnabled = false
             exo_save.setImageDrawable(resIcon)
             isSaved = true
             val intent = Intent(this, MainActivity::class.java)
