@@ -47,4 +47,48 @@
     <string name="postedOnText">Posted On : </string>
     <string name="invalid_username">Invalid username</string>
     <string name="invalid_password">invalid password</string>
+
+
+
+    <!-- Feed Strings -->
+    <string name="record_video">Record video</string>
+    <string name="select_from_gallery">Select from gallery</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="delete">delete</string>
+    <string name="preview">Preview</string>
+    <string name="about">About</string>
+    <string name="search">Search</string>
+    <string name="save">Save</string>
+    <string name="no_items">No Items</string>
+    <string name="no_video_created">No Video Created</string>
+    <string name="my_gallery">My Gallery</string>
+    <string name="thumbnail">Thumbnail</string>
+    <string name="gallery_recycle_view">Gallery Recycle View</string>
+    <string name="folder_view">Folder Recycle View</string>
+
+    <plurals name="numberOfFiles">
+        <!--
+             As a developer, you should always supply "one" and "other"
+             strings. Your translators will know which strings are actually
+             needed for their language. Always include %d in "one" because
+             translators will need to use %d for languages where "one"
+             doesn't mean 1 (as explained above).
+          -->
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
+
+    <plurals name="numberOfFolders">
+        <!--
+             As a developer, you should always supply "one" and "other"
+             strings. Your translators will know which strings are actually
+             needed for their language. Always include %d in "one" because
+             translators will need to use %d for languages where "one"
+             doesn't mean 1 (as explained above).
+          -->
+        <item quantity="one">%d folder</item>
+        <item quantity="other">%d folders</item>
+    </plurals>
 </resources>
+

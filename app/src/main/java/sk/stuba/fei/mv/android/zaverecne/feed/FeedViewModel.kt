@@ -24,10 +24,15 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo = MasterRepository(application)
 
+    private val context = application
+
 //    fun test() {
 //        viewModelScope.launch {
-//            val resp = repo.removePost("54fda9ca921534d3d33c3aa0716af62f", 1)
+//            val resp = repo.registerUser("test1", "test2", "test@t.t")
 //            println(resp)
+//
+//            val resp2 = repo.existsUser("test1")
+//            println(resp2)
 
             // TEST ADDING PROFILE PICTURE
 //            val dirName = "Pictures/"
@@ -40,6 +45,18 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 //                    println(resp)
 //                }
 //            }
+            // TEST ADDING VIDEO POST
+//            val dirName = "Videos/"
+//            val dir: File? = context.getExternalFilesDir(dirName)
+//            dir?.let {
+//                val fileName = "vid1.mp4"
+//                val f: File = dir.resolve(fileName)
+//                f.let {
+//                    val resp = repo.uploadPost("54fda9ca921534d3d33c3aa0716af62f", it)
+//                    println(resp)
+//                }
+//            }
+//
 //
 //        }
 //    }
@@ -56,7 +73,7 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val userPosts = repo.fetchUserPosts("54fda9ca921534d3d33c3aa0716af62f")
                 val feedPosts: ArrayList<FeedPost> = arrayListOf()
-                userPosts.forEach { userPost ->
+                userPosts?.forEach { userPost ->
                     val thumbnail: String = "PLACEHOLDER" // TODO: add video thumbnail
                     val title: String = "PLACEHOLDER" // TODO: add video title
                     val post = FeedPost(userPost.postid, userPost.videourl, thumbnail, title)

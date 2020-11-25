@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class UserPostResult (
-    val postid: Int,
+    val postid: String,
     val created: String,
     val videourl: String,
     val username: String,
