@@ -34,7 +34,8 @@ class RegisterViewModel(private val masterRepository: MasterRepository):ViewMode
                         email = result.email
                     ))
 
-                //TODO : clear db before insert
+                masterRepository.dbClearUsers();
+
                 val user = User(
                     result.username,
                     result.email,

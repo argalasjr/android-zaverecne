@@ -28,18 +28,18 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
 
     init {
 
-        //TODO: Check db
         viewModelScope.launch {
-//            val user = masterRepository.dbExistsActiveUser()
-//
-//            if ( user != null ){
-//                _loginResult.value =
-//                    LoginResult(success = LoggedInUserView(
-//                        displayName = user.userName,
-//                        profilePicture = user.profilePicSrc,
-//                        email = user.email
-//                    ))
-//            }
+
+            val user = masterRepository.dbExistsActiveUser()
+
+            if ( user != null ){
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(
+                        displayName = user.userName,
+                        profilePicture = user.profilePicSrc,
+                        email = user.email
+                    ))
+            }
 
         }
 
@@ -61,6 +61,15 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
                         profilePicture = result.profile,
                         email = result.email))
 
+                masterRepository.dbClearUsers()
+                val user = User(
+                    result.username,
+                    result.email,
+                    result.profile,
+                    result.token,
+                    result.refresh
+                )
+                masterRepository.dbInsertUser(user)
 
 
 
