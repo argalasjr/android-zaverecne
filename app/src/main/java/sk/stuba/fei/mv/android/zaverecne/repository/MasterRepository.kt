@@ -44,8 +44,8 @@ object MasterRepository {
         userDao.delete(user)
     }
 
-    suspend fun dbGetUser(userName: String): User? {
-        return userDao.get(userName)
+    suspend fun dbExistsActiveUser(): User? {
+        return userDao.getActive()
     }
 
     suspend fun registerUser(userName: String, password: String, email: String): UserResult? {

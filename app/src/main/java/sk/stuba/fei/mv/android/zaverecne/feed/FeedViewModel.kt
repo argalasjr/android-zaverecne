@@ -71,7 +71,7 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                val userPosts = repo.fetchUserPosts("54fda9ca921534d3d33c3aa0716af62f")
+                val userPosts = repo.fetchUserPosts("3388b7c10963afa12d95dc97522d2907")
                 val feedPosts: ArrayList<FeedPost> = arrayListOf()
                 userPosts?.forEach { userPost ->
                     val thumbnail: String = "PLACEHOLDER" // TODO: add video thumbnail
