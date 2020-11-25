@@ -8,6 +8,10 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey
     var userName: String,
+    @ColumnInfo(name = "email")
+    var email: String,
+    @ColumnInfo(name = "profilePicSrc")
+    var profilePicSrc: String,
     @ColumnInfo(name = "token")
     var token: String,
     @ColumnInfo(name = "refreshToken")

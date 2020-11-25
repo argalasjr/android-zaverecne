@@ -13,6 +13,6 @@ interface UserDatabaseDao {
     @Delete
     suspend fun delete(user: User)
 
-    @Query("SELECT * from users WHERE userName = :userName")
-    suspend fun get(userName: String): User?
+    @Query("SELECT * from users LIMIT 1")
+    suspend fun getActive(): User?
 }
