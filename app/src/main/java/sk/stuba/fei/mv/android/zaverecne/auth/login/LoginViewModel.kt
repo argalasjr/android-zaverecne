@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.database.User
 import sk.stuba.fei.mv.android.zaverecne.network.Result
 import sk.stuba.fei.mv.android.zaverecne.network.UserResult
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
@@ -28,6 +29,20 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
     init {
 
         //TODO: Check db
+        viewModelScope.launch {
+//            val user = masterRepository.dbExistsActiveUser()
+//
+//            if ( user != null ){
+//                _loginResult.value =
+//                    LoginResult(success = LoggedInUserView(
+//                        displayName = user.userName,
+//                        profilePicture = user.profilePicSrc,
+//                        email = user.email
+//                    ))
+//            }
+
+        }
+
 
         
     }
@@ -41,7 +56,13 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
 
             if(result != null){
                 _loginResult.value =
-                    LoginResult(success = LoggedInUserView(displayName = result.username))
+                    LoginResult(success = LoggedInUserView(
+                        displayName = result.username,
+                        profilePicture = result.profile,
+                        email = result.email))
+
+
+
 
             } else {
                 _loginResult.value = LoginResult(error = R.string.auth_failed)

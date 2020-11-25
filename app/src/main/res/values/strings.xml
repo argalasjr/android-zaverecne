@@ -9,8 +9,12 @@
     <string name="action_sign_in">Sign In</string>
     <string name="action_register">Register</string>
     <string name="email">Email</string>
-    <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
+    <string name="invalid_password">Password too short, enter minimum 6 characters!</string>
+    <string name="invalid_username">Enter username</string>
+    <string name="invalid_email">Enter correct email format</string>
+    <string name="invalid_verify_password">Passwords do not match</string>
     <string name="auth_failed">Authentication failed, check your username and password or sign up</string>
+    <string name="register_failed">Registration failed, please try again.</string>
     <string name="change_email">Change Email</string>
     <string name="change_password">Change Password</string>
     <string name="send_password_reset_email">Send Password reset email</string>
@@ -45,8 +49,8 @@
     <string name="pick_video">Pick video</string>
     <string name="capture_video">Capture video</string>
     <string name="postedOnText">Posted On : </string>
-    <string name="invalid_username">Enter username</string>
-    <string name="invalid_password">Minimum password length is 6</string>
+
+
 
 
 

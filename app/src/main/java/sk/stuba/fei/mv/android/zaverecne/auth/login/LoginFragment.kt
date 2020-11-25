@@ -1,5 +1,6 @@
 package sk.stuba.fei.mv.android.zaverecne.auth.login
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,16 +9,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.LoginFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.util.Utils
 
 
 class LoginFragment : Fragment() {
@@ -78,6 +82,8 @@ class LoginFragment : Fragment() {
                         showLoginFailed(it)
                     }
                     loginResult.success?.let {
+
+
                         updateUiWithUser(it)
                         val navController = findNavController();
                         navController.navigate(R.id.action_loginFragment_to_feedFragment)
@@ -121,6 +127,7 @@ class LoginFragment : Fragment() {
                     username.text.toString(),
                     password.text.toString()
                 )
+                Utils.hideSoftKeyBoard(application, it )
             }
             btnLinkToRegister.setOnClickListener { view: View ->
 
@@ -138,7 +145,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.app_name) + model.displayName
+        val welcome = "Welcome " + model.displayName
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
@@ -148,4 +155,8 @@ class LoginFragment : Fragment() {
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, errorString, Toast.LENGTH_LONG).show()
     }
+
+
+
+
 }

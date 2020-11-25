@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.auth.login.LoggedInUserView
 import sk.stuba.fei.mv.android.zaverecne.databinding.RegisterFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.util.Utils
 
 class RegisterFragment : Fragment(){
 
@@ -55,15 +56,20 @@ class RegisterFragment : Fragment(){
                         return@Observer
                     }
                     register.isEnabled = registerFormState.isDataValid
+
                     registerFormState.usernameError?.let {
                         username.error = getString(it)
+                    }
+
+                    registerFormState.emailError?.let {
+                        email.error = getString(it)
                     }
                     registerFormState.passwordError?.let {
                         password.error = getString(it)
                     }
 
-                    registerFormState.emailError?.let {
-                        password.error = getString(it)
+                    registerFormState.verifyPasswordError?.let {
+                        verifyPassword.error = getString(it)
                     }
                 })
 
@@ -94,17 +100,19 @@ class RegisterFragment : Fragment(){
                     registerViewModel.registerDataChanged(
                         username.text.toString(),
                         password.text.toString(),
-                        email.text.toString()
+                        email.text.toString(),
+                        verifyPassword.text.toString()
                     )
                 }
             }
 
 
             username.addTextChangedListener(afterTextChangedListener)
-            password.addTextChangedListener(afterTextChangedListener)
             email.addTextChangedListener(afterTextChangedListener)
+            password.addTextChangedListener(afterTextChangedListener)
+            verifyPassword.addTextChangedListener(afterTextChangedListener)
 
-            password.setOnEditorActionListener { _, actionId, _ ->
+            verifyPassword.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     registerViewModel.register(
                         username.text.toString(),
@@ -123,6 +131,7 @@ class RegisterFragment : Fragment(){
                     password.text.toString(),
                     email.text.toString()
                 )
+                Utils.hideSoftKeyBoard(application, it )
             }
             
             
@@ -132,7 +141,7 @@ class RegisterFragment : Fragment(){
             return binding.root
     }
     private fun updateUiWithUser(model: RegisteredUserView) {
-        val welcome = getString(R.string.app_name) + model.displayName
+        val welcome = "Welcome " + model.displayName
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()

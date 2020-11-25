@@ -30,7 +30,6 @@ abstract class UserDatabase : RoomDatabase() {
                     // Assign INSTANCE to the newly created database.
                     INSTANCE = instance
                 }
-
                 // Return instance; smart cast to be non-null.
                 return instance
             }
