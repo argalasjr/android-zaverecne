@@ -15,4 +15,7 @@ interface UserDatabaseDao {
 
     @Query("SELECT * from users LIMIT 1")
     suspend fun getActive(): User?
+
+    @Query("DELETE FROM users")
+    suspend fun clear()
 }

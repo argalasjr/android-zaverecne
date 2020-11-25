@@ -25,7 +25,7 @@ abstract class UserDatabase : RoomDatabase() {
                         UserDatabase::class.java,
                         "user_database"
                     )
-                        .fallbackToDestructiveMigration()
+                        //.fallbackToDestructiveMigration()
                         .build()
                     // Assign INSTANCE to the newly created database.
                     INSTANCE = instance

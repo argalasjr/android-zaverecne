@@ -24,6 +24,8 @@ object MasterRepository {
     private val apiKey = "fL5pP7jH4uM0lE6jP2gD0xY2jJ2nL4"
     private val _mediaUrlBase: String = "http://api.mcomputing.eu/mobv/uploads/"
 
+    private var numRetries: Int = 0
+
     val mediaUrlBase: String
             get() = _mediaUrlBase
 
@@ -46,6 +48,10 @@ object MasterRepository {
 
     suspend fun dbExistsActiveUser(): User? {
         return userDao.getActive()
+    }
+
+    suspend fun dbClearUsers() {
+        userDao.clear()
     }
 
     suspend fun registerUser(userName: String, password: String, email: String): UserResult? {
@@ -88,11 +94,21 @@ object MasterRepository {
             "oldpassword" to oldPassword,
             "newpassword" to newPassword
         )
-        return Api.retrofitService.runCatching {
-            changeUserPassword(req)
+        Api.retrofitService.runCatching {
+            val res = changeUserPassword(req)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("changeUserPassword", it)
-            null
+            val err = handleException("changeUserPassword", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return changeUserPassword(oldPassword, newPassword, newToken)
+                }
+            }
+            return null
         }
     }
 
@@ -131,11 +147,21 @@ object MasterRepository {
             "apikey" to apiKey,
             "token" to token
         )
-        return Api.retrofitService.runCatching {
-            fetchUserPosts(req)
+        Api.retrofitService.runCatching {
+            val res = fetchUserPosts(req)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("fetchUserPosts", it)
-            null
+            val err = handleException("fetchUserPosts", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return fetchUserPosts(newToken)
+                }
+            }
+            return null
         }
     }
 
@@ -145,11 +171,21 @@ object MasterRepository {
             "apikey" to apiKey,
             "token" to token
         )
-        return Api.retrofitService.runCatching {
-            fetchUserProfile(req)
+        Api.retrofitService.runCatching {
+            val res = fetchUserProfile(req)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("fetchUserProfile", it)
-            null
+            val err = handleException("fetchUserProfile", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return fetchUserProfile(newToken)
+                }
+            }
+            return null
         }
     }
 
@@ -175,11 +211,21 @@ object MasterRepository {
             ),
             dataReq
         )
-        return Api.retrofitService.runCatching {
-            uploadProfilePicture(imagePart, dataPart)
+        Api.retrofitService.runCatching {
+            val res = uploadProfilePicture(imagePart, dataPart)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("uploadProfilePicture", it)
-            null
+            val err = handleException("uploadProfilePicture", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return uploadProfilePicture(newToken, toUpload)
+                }
+            }
+            return null
         }
     }
 
@@ -189,11 +235,21 @@ object MasterRepository {
             "apikey" to apiKey,
             "token" to token
         )
-        return Api.retrofitService.runCatching {
-            removeProfilePicture(req)
+        Api.retrofitService.runCatching {
+            val res = removeProfilePicture(req)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("removeProfilePicture", it)
-            null
+            val err = handleException("removeProfilePicture", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return removeProfilePicture(newToken)
+                }
+            }
+            return null
         }
     }
 
@@ -219,11 +275,21 @@ object MasterRepository {
             ),
             dataReq
         )
-        return Api.retrofitService.runCatching {
-            uploadPost(videoPart, dataPart)
+        Api.retrofitService.runCatching {
+            val res = uploadPost(videoPart, dataPart)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("uploadPost", it)
-            null
+            val err = handleException("uploadPost", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return uploadPost(newToken, toUpload)
+                }
+            }
+            return null
         }
     }
 
@@ -234,12 +300,35 @@ object MasterRepository {
             "token" to token,
             "id" to postId
         )
-        return Api.retrofitService.runCatching {
-            removePost(req)
+        Api.retrofitService.runCatching {
+            val res = removePost(req)
+            numRetries = 0
+            return res
         }.getOrElse {
-            handleException("removePost", it)
-            null
+            val err = handleException("removePost", it)
+            if(err == 401 && numRetries < 3) {
+                // user token not valid anymore, refresh and try again
+                val newToken = renewUserToken()
+                newToken?.let {
+                    numRetries += 1
+                    return removePost(newToken, postId)
+                }
+            }
+            return null
         }
+    }
+
+    private suspend fun renewUserToken(): String? {
+        val activeUser = dbExistsActiveUser()
+        activeUser?.let {
+            val res = refreshUserToken(activeUser.refreshToken)
+            res?.let {
+                val updatedUser = User(activeUser.userName, activeUser.email, activeUser.profilePicSrc, res.token, res.refresh)
+                dbUpdateUser(updatedUser)
+                return res.token
+            }
+        }
+        return null
     }
 
 
@@ -262,10 +351,11 @@ object MasterRepository {
             file
         )
 
-    private fun handleException(fn: String, e: Throwable) {
+    private fun handleException(fn: String, e: Throwable): Int {
         when (e) {
             is HttpException -> {
                 Log.e(fn, "HTTP error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message()}")
+                return e.code()
             }
             is ProtocolException -> {
                 Log.e(fn, "Protocol error. Function $fn failed with exception: ${e.javaClass.canonicalName}.")
@@ -275,5 +365,6 @@ object MasterRepository {
             }
             else -> Log.e(fn, "Error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
         }
+        return 0
     }
 }
