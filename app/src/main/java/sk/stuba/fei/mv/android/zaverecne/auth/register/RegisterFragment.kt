@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.auth.login.LoggedInUserView
 import sk.stuba.fei.mv.android.zaverecne.databinding.RegisterFragmentBinding
@@ -75,8 +76,8 @@ class RegisterFragment : Fragment(){
                     }
                     registerResult.success?.let {
                         updateUiWithUser(it)
-                        Navigation.createNavigateOnClickListener(
-                            R.id.action_registerFragment_to_feedFragment)
+                        val navController = findNavController();
+                        navController.navigate(R.id.action_registerFragment_to_feedFragment)
                     }
                 })
 

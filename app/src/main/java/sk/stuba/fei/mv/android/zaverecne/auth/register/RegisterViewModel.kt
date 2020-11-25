@@ -24,19 +24,13 @@ class RegisterViewModel(private val masterRepository: MasterRepository):ViewMode
 
         viewModelScope.launch {
 
-            try {
-                val result = masterRepository.registerUser(username,password,email)
-                if (result is UserResult) {
-                    _registerResult.value =
-                        RegisterResult(success = RegisteredUserView(displayName = result.username))
-                } else {
-                    _registerResult.value = RegisterResult(error = R.string.auth_failed)
-                }
-            } catch (e: Exception) {
+            val result = masterRepository.registerUser(username,password,email)
+            if (result != null) {
+                _registerResult.value =
+                    RegisterResult(success = RegisteredUserView(displayName = result.username))
+            } else {
                 _registerResult.value = RegisterResult(error = R.string.auth_failed)
             }
-
-
 
         }
 
@@ -48,7 +42,7 @@ class RegisterViewModel(private val masterRepository: MasterRepository):ViewMode
         } else if (!isPasswordValid(password)) {
             _registerForm.value = RegisterFormState(passwordError = R.string.invalid_password)
         } else if (!isUserNameValid(email)) {
-            _registerForm.value = RegisterFormState(passwordError = R.string.invalid_password)
+            _registerForm.value = RegisterFormState(emailError =  R.string.invalid_username)
     } else {
             _registerForm.value = RegisterFormState(isDataValid = true)
         }

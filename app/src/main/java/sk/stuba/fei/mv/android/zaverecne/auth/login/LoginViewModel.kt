@@ -1,5 +1,6 @@
 package sk.stuba.fei.mv.android.zaverecne.auth.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,19 +25,25 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
     val loginResult: LiveData<LoginResult> = _loginResult
 
 
+    init {
+
+        //TODO: Check db
+
+        
+    }
+
     fun login(username: String, password: String) {
 
         viewModelScope.launch {
 
-            try {
-                val result = masterRepository.loginUser(username,password)
-                if (result is UserResult) {
-                    _loginResult.value =
-                        LoginResult(success = LoggedInUserView(displayName = result.username))
-                } else {
-                    _loginResult.value = LoginResult(error = R.string.auth_failed)
-                }
-            } catch (e: Exception) {
+            val result = masterRepository.loginUser(username,password)
+
+
+            if(result != null){
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(displayName = result.username))
+
+            } else {
                 _loginResult.value = LoginResult(error = R.string.auth_failed)
             }
 
