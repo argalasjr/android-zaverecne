@@ -25,7 +25,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:background="@drawable/circle"
-            android:src="@drawable/profile_picture"
+            app:imageUrl="@{profileViewModel.loggedInUserView.profilePicture}"
             app:civ_border_color="#FF000000"
             app:civ_border_width="2dp"
             app:layout_constraintEnd_toEndOf="@+id/container"
@@ -36,7 +36,7 @@
 
         <TextView
             android:id="@+id/user_name"
-            android:text="User Name"
+            android:text="@{profileViewModel.loggedInUserView.displayName}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/profile_image"
@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/user_email"
-        android:text="User Email"
+        android:text="@{profileViewModel.loggedInUserView.email}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/user_name"

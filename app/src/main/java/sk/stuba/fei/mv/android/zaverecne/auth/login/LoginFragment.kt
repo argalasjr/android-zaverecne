@@ -21,6 +21,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.LoginFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import sk.stuba.fei.mv.android.zaverecne.util.Utils
 
 
@@ -42,7 +43,6 @@ class LoginFragment : Fragment() {
         // Create an instance of the ViewModel Factory.
         //val dataSource = SleepDatabase.getInstance(application).sleepDatabaseDao
         val viewModelFactory = LoginViewModelFactory(application)
-
 
         // Get a reference to the ViewModel associated with this fragment.
         val loginViewModel =

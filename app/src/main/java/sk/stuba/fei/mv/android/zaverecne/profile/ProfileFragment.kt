@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
 class ProfileFragment : Fragment() {
@@ -25,6 +26,7 @@ class ProfileFragment : Fragment() {
 
 
         val application = requireNotNull(this.activity).application
+
 
         // Create an instance of the ViewModel Factory.
         val viewModelFactory = ProfileViewModelFactory(application)
@@ -47,7 +49,7 @@ class ProfileFragment : Fragment() {
 
         binding.apply {
 
-            //TODO: logic
+
         }
 
         return binding.root
