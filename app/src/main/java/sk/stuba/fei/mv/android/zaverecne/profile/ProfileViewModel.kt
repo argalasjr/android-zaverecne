@@ -5,13 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.auth.login.LoggedInUserView
-import sk.stuba.fei.mv.android.zaverecne.auth.login.LoginResult
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewModel() {
 
+    private val _status = MutableLiveData<ApiStatus>()
+
+    val status: LiveData<ApiStatus>
+        get() = _status
 
     private val _loggedInUserView = MutableLiveData<LoggedInUserView>()
     val loggedInUserView: LiveData<LoggedInUserView> = _loggedInUserView
@@ -19,12 +22,10 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
 
     init {
 
-
-
         viewModelScope.launch {
 
             val user = masterRepository.dbExistsActiveUser()
-
+            _status.value = ApiStatus.LOADING
             if ( user != null ){
                     if(user.profilePicSrc.length == 0){
                         user.profilePicSrc = "https://www.csudh.edu/Assets/csudh-sites/slp/images/faculty-staff-photos/nophoto_icon-user-default.jpg"
@@ -34,9 +35,10 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
                    profilePicture = user.profilePicSrc,
                    email = user.email)
 
-
+                _status.value = ApiStatus.DONE
+            }else{
+                _status.value = ApiStatus.ERROR
             }
-
         }
 
 

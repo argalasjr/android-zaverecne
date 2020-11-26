@@ -37,7 +37,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kotlinx.android.synthetic.main.feed_item.view.*
-import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
 import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
@@ -131,6 +130,23 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
                     .error(R.drawable.ic_broken_image)
             )
             .into(view)
+    }
+}
+
+@BindingAdapter("profile")
+fun bindProfile(view: ImageView, profileSrc: String?) {
+    profileSrc?.let {
+        val imgUri = Uri.parse(profileSrc)
+        Glide.with(view.context)
+                .load(imgUri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(
+                        RequestOptions()
+                                .placeholder(R.drawable.profile_picture)
+                                .circleCrop()
+//                                .error(R.drawable.ic_broken_image)
+                )
+                .into(view)
     }
 }
 

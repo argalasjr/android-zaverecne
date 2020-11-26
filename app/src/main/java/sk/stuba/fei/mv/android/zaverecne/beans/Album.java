@@ -17,7 +17,6 @@ public class Album implements List<RowItem> {
     private ArrayList<RowItem> rowItems = new ArrayList<>();
     private File file;
     private String name;
-    private Bitmap image;
 
     public File getFile() {
         return file;
@@ -39,14 +38,6 @@ public class Album implements List<RowItem> {
         this.name = name;
     }
 
-
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-    }
 
     public Album() {
     }

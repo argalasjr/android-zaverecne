@@ -45,8 +45,8 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.recycle_view_gallery)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.title = getString(R.string.my_gallery)
+//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar!!.title = getString(R.string.my_gallery)
 
         itemLayout = R.layout.folder_item
 

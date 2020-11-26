@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
-
 <data>
         <variable
             name="profileViewModel"
@@ -17,6 +15,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".profile.ProfileFragment">
+
+    <ImageView
+        android:id="@+id/backProfil"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        />
 
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -31,7 +39,6 @@
             app:layout_constraintEnd_toEndOf="@+id/container"
             app:layout_constraintStart_toStartOf="@+id/container"
             app:layout_constraintBottom_toTopOf="@id/user_name"
-
             />
 
         <TextView
@@ -77,7 +84,15 @@
 
     </Button>
 
-
+    <ImageView
+        android:id="@+id/status_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:apiStatus="@{profileViewModel.status}"
+        />
 
 
 

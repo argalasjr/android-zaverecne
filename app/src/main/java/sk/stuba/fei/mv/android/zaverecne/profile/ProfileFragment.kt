@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
@@ -48,8 +50,11 @@ class ProfileFragment : Fragment() {
 
 
         binding.apply {
+            backProfil.setOnClickListener(View.OnClickListener {
+                val navController = findNavController();
+                navController.navigate(R.id.action_profileFragment_to_feedFragment)
 
-
+            })
         }
 
         return binding.root

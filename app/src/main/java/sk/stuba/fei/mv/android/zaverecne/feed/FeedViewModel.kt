@@ -6,10 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import sk.stuba.fei.mv.android.zaverecne.R
-import sk.stuba.fei.mv.android.zaverecne.database.User
+import sk.stuba.fei.mv.android.zaverecne.ApiStatus
+import sk.stuba.fei.mv.android.zaverecne.network.UserResult
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
-import java.io.*
 
 
 class FeedViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,7 +24,11 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo = MasterRepository(application)
 
-    private val context = application
+    private val _userProfile = MutableLiveData<UserResult>()
+
+    val userProfile: LiveData<UserResult>
+        get() = _userProfile
+
 
 //    fun test() {
 //        viewModelScope.launch {
@@ -69,7 +72,24 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
     init {
 //        test()
         getUserPosts()
+        getUserPhotoProfile()
 
+    }
+
+    private fun getUserPhotoProfile() {
+        viewModelScope.launch {
+            _status.value = ApiStatus.LOADING
+            try {
+                val activeUser = repo.dbExistsActiveUser()
+                activeUser?.let {
+                    _userProfile.value = repo.fetchUserProfile(activeUser.token)
+                    _status.value = ApiStatus.DONE
+                }
+            } catch (e: Exception) {
+                _status.value = ApiStatus.ERROR
+            }
+
+        }
     }
 
     private fun getUserPosts() {
@@ -83,7 +103,7 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                     userPosts?.forEach { userPost ->
                         val thumbnail: String = "PLACEHOLDER" // TODO: add video thumbnail
                         val title: String = "PLACEHOLDER" // TODO: add video title
-                        val post = FeedPost(userPost.postid, userPost.videourl, thumbnail, title)
+                        val post = FeedPost(userPost.postid, userPost.username, userPost.videourl, userPost.created, title, userPost.profile,)
                         feedPosts.add(post)
                     }
                     _posts.value = feedPosts
@@ -99,4 +119,5 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 
-enum class ApiStatus { LOADING, ERROR, DONE }
+
+

@@ -71,6 +71,9 @@
     <string name="gallery_recycle_view">Gallery Recycle View</string>
     <string name="folder_view">Folder Recycle View</string>
     <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="user_email">User Email</string>
+    <string name="user_name">User Name</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"

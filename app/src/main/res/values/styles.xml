@@ -14,4 +14,11 @@
         <item name="colorControlHighlight">@color/material_purple_200</item>
     </style>
 
+    <style name="AppTheme.Green" parent="AppTheme">
+        <item name="colorPrimary">@color/material_purple_500</item>
+        <item name="colorPrimaryDark">@color/material_purple_700</item>
+        <item name="colorAccent">@color/material_purple_a700</item>
+        <item name="colorControlHighlight">@color/material_purple_200</item>
+    </style>
+
 </resources>

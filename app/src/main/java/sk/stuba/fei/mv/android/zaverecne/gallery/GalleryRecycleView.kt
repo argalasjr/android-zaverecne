@@ -48,9 +48,9 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
         super.onCreate(savedInstanceState)
         //setAnimation();
         setContentView(R.layout.recycle_view_gallery)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         intentData
-        supportActionBar!!.title = title
+//        supportActionBar!!.title = title
 
         itemLayout = R.layout.gallery_view_item
 
@@ -137,10 +137,10 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
 
     override fun onRowItemSelected(rowItem: RowItem?, imageView: ImageView?) {
         selectedItem = rowItem
-        if (searchView!!.isShown) {
-            searchMenuItem!!.collapseActionView()
-            searchView!!.setQuery("", false)
-        }
+//        if (searchView!!.isShown) {
+//            searchMenuItem!!.collapseActionView()
+//            searchView!!.setQuery("", false)
+//        }
         if (rowItem != null) {
             if (isVideoValid(rowItem.file.absoluteFile.toString())) {
                 val i = Intent(this, VideoPreview::class.java)

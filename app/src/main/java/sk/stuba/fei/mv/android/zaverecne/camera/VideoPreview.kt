@@ -6,17 +6,14 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
@@ -26,14 +23,9 @@ import sk.stuba.fei.mv.android.zaverecne.MainActivity
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.File
-import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.recycle_view_gallery.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
-import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles
 
 

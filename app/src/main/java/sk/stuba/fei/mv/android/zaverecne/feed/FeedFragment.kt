@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
+import kotlinx.android.synthetic.main.feed_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.camera.CameraAcitivty
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
@@ -25,7 +27,8 @@ class FeedFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FeedFragmentBinding.inflate(inflater)
+        val binding =  FeedFragmentBinding.inflate(inflater)
+
         val application = requireNotNull(this.activity).application
         val viewModelFactory = FeedViewModelFactory(application)
         val feedViewModel = ViewModelProvider(this, viewModelFactory).get(FeedViewModel::class.java)
@@ -38,7 +41,14 @@ class FeedFragment : Fragment() {
 
         })
 
-//
+
+        binding.profilePic.setOnClickListener(View.OnClickListener {
+//            Log.d("Profile", "profile")
+            val navController = findNavController();
+                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
+        })
+
+
         binding.speedDial.addActionItem(
             SpeedDialActionItem.Builder(
                 R.id.recordVideo,
@@ -59,7 +69,6 @@ class FeedFragment : Fragment() {
                 .create()
         )
 
-
         binding.speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
             when (speedDialActionItem.id) {
                 R.id.recordVideo -> {
@@ -73,32 +82,35 @@ class FeedFragment : Fragment() {
                 else -> false
             }
         })
-        binding.speedDialProfile.addActionItem(
-            SpeedDialActionItem.Builder(
-                R.id.openProfile,
-                R.drawable.ic_baseline_video_library_24
-            ).setLabel(getString(R.string.profile))
-                .setTheme(R.style.AppTheme_Purple)
-                .setLabelClickable(true)
-                .create()
-        )
-
-
-        binding.speedDialProfile.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
-            when (speedDialActionItem.id) {
-                R.id.openProfile -> {
-                    val navController = findNavController();
-                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
-                    false // true to keep the Speed Dial open
-                }
-                else -> false
-            }
-        })
+//
+//        binding.speedDialProfile.addActionItem(
+//            SpeedDialActionItem.Builder(
+//                R.id.openProfile,
+//                R.drawable.ic_baseline_video_library_24
+//            ).setLabel(getString(R.string.profile))
+//                .setTheme(R.style.AppTheme_Purple)
+//                .setLabelClickable(true)
+//                .create()
+//        )
+//
+//
+//        binding.speedDialProfile.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
+//            when (speedDialActionItem.id) {
+//                R.id.openProfile -> {
+//                    val navController = findNavController();
+//                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
+//                    false // true to keep the Speed Dial open
+//                }
+//                else -> false
+//            }
+//        })
 
 
 
         return binding.root
     }
+
+
 
     private fun captureVideo() {
         // Permission has already been granted
@@ -112,4 +124,11 @@ class FeedFragment : Fragment() {
         val options = ActivityOptions.makeSceneTransitionAnimation(activity)
         startActivity(i, options.toBundle())
     }
+
+//    private fun loadFragment(fragment: Fragment){
+//        val transaction = parentFragmentManager.beginTransaction()
+//        transaction.replace(R.id., fragment)
+//        transaction.disallowAddToBackStack()
+//        transaction.commit()
+//    }
 }

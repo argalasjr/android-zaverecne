@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class RowItem implements Comparable<RowItem>, Serializable {
-    private Bitmap imageId;
     private String title;
     private String desc;
     private File file;
@@ -18,7 +17,6 @@ public class RowItem implements Comparable<RowItem>, Serializable {
 
 
     public RowItem(String title, String desc, File file, Date dateCreated) {
-        this.imageId = imageId;
         this.title = title;
         this.desc = desc;
         this.file = file;
@@ -41,12 +39,6 @@ public class RowItem implements Comparable<RowItem>, Serializable {
         this.expanded = expanded;
     }
 
-    public Bitmap getImageId() {
-        return imageId;
-    }
-    public void setImageId(Bitmap imageId) {
-        this.imageId = imageId;
-    }
     public String getDesc() {
         return desc;
     }
@@ -93,7 +85,6 @@ public class RowItem implements Comparable<RowItem>, Serializable {
     @Override
     public String toString() {
         return "RowItem{" +
-                "imageId=" + imageId +
                 ", title='" + title + '\'' +
                 ", desc='" + desc + '\'' +
                 ", file=" + file +
