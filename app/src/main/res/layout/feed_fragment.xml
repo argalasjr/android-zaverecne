@@ -18,17 +18,19 @@
             android:id="@+id/feed"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="6dp"
             android:clipToPadding="false"
+            android:padding="6dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:listData="@{viewModel.posts}"
             app:spanCount="2"
             tools:itemCount="10"
-            tools:listitem="@layout/feed_item"
-            app:listData="@{viewModel.posts}"/>
+            tools:listitem="@layout/feed_item" />
 
         <ImageView
             android:id="@+id/status_image"
@@ -67,7 +69,28 @@
             app:sdMainFabOpenedSrc="@drawable/ic_baseline_close_24"
             app:sdOverlayLayout="@id/overlay" />
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
+        <com.leinardi.android.speeddial.SpeedDialView
+            android:id="@+id/speedDial_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="2dp"
+            android:layout_marginBottom="16dp"
+            android:animateLayoutChanges="true"
+            android:animationCache="true"
+            android:backgroundTintMode="src_over"
+            android:elevation="11dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:sdExpansionMode="top"
+            app:sdMainFabAnimationRotateAngle="90"
+            app:sdMainFabClosedIconColor="@color/white"
+            app:sdMainFabClosedSrc="@drawable/ic_baseline_add_24"
+            app:sdMainFabOpenedIconColor="@color/white"
+            app:sdMainFabOpenedSrc="@drawable/ic_baseline_close_24"
+            app:sdOverlayLayout="@id/overlay" />
+
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
 <!--            android:id="@+id/feed"-->
 <!--            android:layout_width="0dp"-->
 <!--            android:layout_height="0dp"-->

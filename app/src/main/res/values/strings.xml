@@ -70,7 +70,7 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="gallery_recycle_view">Gallery Recycle View</string>
     <string name="folder_view">Folder Recycle View</string>
-
+    <string name="profile">Profile</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"

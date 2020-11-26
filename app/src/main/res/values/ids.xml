@@ -2,4 +2,5 @@
 <resources>
     <item name="openVideo" type="id"></item>
     <item name="recordVideo" type="id"></item>
+    <item name="openProfile" type="id"></item>
 </resources>

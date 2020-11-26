@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import sk.stuba.fei.mv.android.zaverecne.R
@@ -67,6 +68,27 @@ class FeedFragment : Fragment() {
                 }
                 R.id.openVideo -> {
                     openGallery()
+                    false // true to keep the Speed Dial open
+                }
+                else -> false
+            }
+        })
+        binding.speedDialProfile.addActionItem(
+            SpeedDialActionItem.Builder(
+                R.id.openProfile,
+                R.drawable.ic_baseline_video_library_24
+            ).setLabel(getString(R.string.profile))
+                .setTheme(R.style.AppTheme_Purple)
+                .setLabelClickable(true)
+                .create()
+        )
+
+
+        binding.speedDialProfile.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
+            when (speedDialActionItem.id) {
+                R.id.openProfile -> {
+                    val navController = findNavController();
+                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
                     false // true to keep the Speed Dial open
                 }
                 else -> false
