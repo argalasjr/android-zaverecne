@@ -6,4 +6,5 @@
 <dimen name="nav_header_height">220dp</dimen>
 <dimen name="fab_margin">16dp</dimen>
 <dimen name="logo_w_h">100dp</dimen>
+    <dimen name="card_margin_horizontal">-3dp</dimen>
 </resources>

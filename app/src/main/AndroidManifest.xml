@@ -50,7 +50,6 @@
             android:name=".gallery.FolderRecycleView"
             android:label="@string/folder_view"
             android:screenOrientation="fullSensor"
-            android:parentActivityName=".MainActivity"
             />
         <activity android:name=".MainActivity">
             <intent-filter>

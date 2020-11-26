@@ -42,15 +42,11 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
     var adapter: FolderRecycleViewAdapter? = null
     var itemLayout = 0
     var isSDPresent = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
-    var isSDSupportedDevice = Environment.isExternalStorageRemovable()
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.recycle_view_gallery)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = getString(R.string.my_gallery)
-
 
         itemLayout = R.layout.folder_item
 
@@ -65,15 +61,10 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
         super.onStart()
     }
 
+
     private fun fetchFiles() {
         val albums: MutableList<Album> = ArrayList<Album>()
-        //        if(isSDSupportedDevice && isSDPresent)
-//        {
-//            albums = FetchFiles.getFiles(root,fileType);
-//        }
-//        else
-//        {
-        Log.d("sd", "is sd present ? $isSDPresent")
+
         val storagePath: StoragePath
         storagePath = StoragePath(getExternalFilesDirs(null))
         val storages = storagePath.deviceStorages
@@ -110,15 +101,18 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
             noItemsText!!.visibility = View.VISIBLE
             val snackbar = Snackbar
                 .make(
-                    media_root_layout!!,
-                    "You have to upload video (.mp4) to your phone's storage before the process.",
-                    Snackbar.LENGTH_INDEFINITE
+                        media_root_layout!!,
+                        "You have to upload video (.mp4) to your phone's storage before the process.",
+                        Snackbar.LENGTH_INDEFINITE
                 )
                 .setAction("OK") { finish() }
             snackbar.show()
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         return super.onPrepareOptionsMenu(menu)
@@ -151,9 +145,9 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
 
     override fun onRefreshData() {
         val songsFound = resources.getQuantityString(
-            R.plurals.numberOfFolders,
-            adapter!!.itemCount,
-            adapter!!.itemCount
+                R.plurals.numberOfFolders,
+                adapter!!.itemCount,
+                adapter!!.itemCount
         )
         numberOfFiles!!.text = songsFound
     }
@@ -180,25 +174,25 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
 
     private fun checkPermission(): Boolean {
         val result = ContextCompat.checkSelfPermission(
-            this@FolderRecycleView,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+                this@FolderRecycleView,
+                Manifest.permission.READ_EXTERNAL_STORAGE
         )
         return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
         ActivityCompat.requestPermissions(
-            this@FolderRecycleView,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            PERMISSION_REQUEST_CODE
+                this@FolderRecycleView,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
         )
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
     ) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -230,9 +224,9 @@ class FolderRecycleView : AppCompatActivity(), FolderRecycleViewAdapter.RowItems
 //            getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transition));
 //            view.setTransitionName("videoTrim");
             val p1 = Pair.create<View, String>(
-                imageView, ViewCompat.getTransitionName(
+                    imageView, ViewCompat.getTransitionName(
                     imageView!!
-                )
+            )
             )
             val activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1)
             startActivity(i, activityOptionsCompat.toBundle())

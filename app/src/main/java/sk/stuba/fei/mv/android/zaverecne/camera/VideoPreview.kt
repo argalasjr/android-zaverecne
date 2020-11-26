@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -23,7 +24,14 @@ import kotlinx.android.synthetic.main.activity_video_preview.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.*
 import sk.stuba.fei.mv.android.zaverecne.MainActivity
 import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.File
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
+import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 
 
 class VideoPreview : AppCompatActivity() {
@@ -48,10 +56,7 @@ class VideoPreview : AppCompatActivity() {
         //get data from intent
         videoUri= intent.data!!
 
-        Log.d(TAG, "video uri: " + videoUri)
-
         exo_close.setOnClickListener(View.OnClickListener {
-//            mFullScreenDialog.dismiss()
             setRetake()
         })
         exo_save.setOnClickListener(View.OnClickListener {
@@ -62,18 +67,34 @@ class VideoPreview : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
             startActivity(intent)
+
+            GlobalScope.launch { // launch a new coroutine in background and continue
+//                _status.value = ApiStatus.LOADING
+                try {
+                    val activeUser = MasterRepository.dbExistsActiveUser()
+                    activeUser?.let {
+                       Log.d("user", "token - " +activeUser.token)
+                        Log.d("user", "name - " + activeUser.userName)
+                        MasterRepository.uploadPost(activeUser.token,File(videoUri.path))
+                    }
+
+                } catch (e: Exception) {
+//                    _status.value = ApiStatus.ERROR
+//                    _posts.value = ArrayList()
+                }
+
+
+            }
+
         })
     }
-
 
     private fun setRetake(): Boolean {
 
                 val file = File(videoUri.path)
                 if (file.exists()) {
-                    val intent = Intent(this, CameraAcitivty::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
-                    startActivity(intent)
-                    return file.delete()
+                    onBackPressed()
+                    return true
                 }
 
         return false

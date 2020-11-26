@@ -14,6 +14,7 @@ import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.camera.CameraAcitivty
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
+
 import sk.stuba.fei.mv.android.zaverecne.gallery.FolderRecycleView
 
 

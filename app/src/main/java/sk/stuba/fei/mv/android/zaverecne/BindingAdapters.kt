@@ -32,11 +32,14 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
+import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
@@ -64,6 +67,8 @@ fun bindStatus(statusImageView: ImageView, status: ApiStatus?) {
 @BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
     val adapter = recyclerView.adapter as FeedRecyclerAdapter
+    val topSpacingDecorator = TopSpacingItemDecoration(30)
+    recyclerView.addItemDecoration(topSpacingDecorator)
     adapter.submitList(data)
 }
 
@@ -73,17 +78,23 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
 fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
     val repo = MasterRepository(context)
     videoSrc.let {
-        val player = SimpleExoPlayer.Builder(context).build()
+        val trackSelection = DefaultTrackSelector(context);
+        val player =   SimpleExoPlayer.Builder(context)
+            .setTrackSelector(trackSelection)
+            .build()
         player.playWhenReady = false
         player.repeatMode = Player.REPEAT_MODE_ALL
         setKeepContentOnPlayerReset(true)
-        this.useController = true
+        this.controllerHideOnTouch = true
+        this.controllerShowTimeoutMs = 1000
+
 
         val fullUrl = repo.mediaUrlBase + videoSrc
         val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
         val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("Demo")).createMediaSource(mediaItem)
         player.setMediaSource(mediaSource)
         this.player = player
+        player.prepare()
 
         this.player!!.addListener(object: Player.EventListener {
             override fun onPlayerError(error: ExoPlaybackException) {
@@ -94,12 +105,12 @@ fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 super.onPlayWhenReadyChanged(playWhenReady, playbackState)
 
-                if (playbackState == Player.STATE_BUFFERING) {
-                    thumbnail.visibility = View.VISIBLE
-                }
-                if (playbackState == Player.STATE_READY) {
-                    thumbnail.visibility = View.GONE
-                }
+//                if (playbackState == Player.STATE_BUFFERING) {
+//                    thumbnail.visibility = View.VISIBLE
+//                }
+//                if (playbackState == Player.STATE_READY) {
+//                    thumbnail.visibility = View.GONE
+//                }
 
             }
         })

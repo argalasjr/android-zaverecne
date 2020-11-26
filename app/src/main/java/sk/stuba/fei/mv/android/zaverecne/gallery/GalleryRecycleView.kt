@@ -61,18 +61,6 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
         }
     }
 
-    //Your Slide animation
-    fun setAnimation() {
-        if (Build.VERSION.SDK_INT > 20) {
-            val slide = Slide()
-            slide.slideEdge = Gravity.RIGHT
-            slide.duration = 700
-            slide.interpolator = AnticipateOvershootInterpolator()
-            window.exitTransition = slide
-            window.enterTransition = slide
-        }
-    }
-
     override fun onStart() {
         super.onStart()
     }
@@ -88,7 +76,7 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
         }
 
     private fun fetchFiles() {
-        if (!rowItems!!.isEmpty()) {
+        if (rowItems!!.isNotEmpty()) {
             path.text = "~ " + rowItems!![0].parent!!.absolutePath
             adapter = VideoRecycleViewAdapter(this, itemLayout, rowItems!!, this, false)
             recycleViewGallery!!.adapter = adapter
