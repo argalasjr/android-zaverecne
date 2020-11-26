@@ -27,11 +27,14 @@ import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.File
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.recycle_view_gallery.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.feed.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
+import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles
 
 
 class VideoPreview : AppCompatActivity() {
@@ -40,6 +43,7 @@ class VideoPreview : AppCompatActivity() {
     var TAG = "Video Preview"
     private var mFullScreenDialog: Dialog? = null
     private lateinit var videoUri: Uri
+    private var MAX_FILE_SIZE = 8
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,38 +62,45 @@ class VideoPreview : AppCompatActivity() {
 
         exo_close.setOnClickListener(View.OnClickListener {
             setRetake()
+
         })
         exo_save.setOnClickListener(View.OnClickListener {
-            val resIcon = getDrawable(R.drawable.ic_baseline_done_outline_24)
-            exo_save.isEnabled = false
-            exo_save.setImageDrawable(resIcon)
-            isSaved = true
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
-            startActivity(intent)
 
-            GlobalScope.launch { // launch a new coroutine in background and continue
+            val size = FetchFiles.getFileSize(File(videoUri.path),"MB")
+            if(size <= MAX_FILE_SIZE){
+
+                exo_save.isEnabled = false
+                isSaved = true
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
+                startActivity(intent)
+
+                GlobalScope.launch { // launch a new coroutine in background and continue
 //                _status.value = ApiStatus.LOADING
-                try {
-                    val activeUser = MasterRepository.dbExistsActiveUser()
-                    activeUser?.let {
-                       Log.d("user", "token - " +activeUser.token)
-                        Log.d("user", "name - " + activeUser.userName)
-                        MasterRepository.uploadPost(activeUser.token,File(videoUri.path))
-                    }
-
-                } catch (e: Exception) {
+                    try {
+                        val activeUser = MasterRepository.dbExistsActiveUser()
+                        activeUser?.let {
+                            MasterRepository.uploadPost(activeUser.token,File(videoUri.path))
+                        }
+                    } catch (e: Exception) {
 //                    _status.value = ApiStatus.ERROR
 //                    _posts.value = ArrayList()
+                    }
                 }
-
-
+            }else{
+                val snackbar = Snackbar
+                        .make(exoplayerView!!, "The maximum file size is 8 MB.", Snackbar.LENGTH_LONG)
+                snackbar.show()
             }
+
 
         })
     }
 
+
     private fun setRetake(): Boolean {
+
+
 
                 val file = File(videoUri.path)
                 if (file.exists()) {

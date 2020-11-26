@@ -44,7 +44,7 @@ class CameraAcitivty : AppCompatActivity(){
         setContentView(R.layout.activity_camera_acitivty)
         camera.setLifecycleOwner(this)
         camera.mode = Mode.VIDEO
-        camera.audio = Audio.ON
+//        camera.audio = Audio.ON
         camera.facing = Facing.BACK
         camera.videoCodec = VideoCodec.H_264
 

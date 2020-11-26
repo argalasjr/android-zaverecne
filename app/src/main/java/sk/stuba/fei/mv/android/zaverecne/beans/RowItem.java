@@ -12,7 +12,7 @@ public class RowItem implements Comparable<RowItem>, Serializable {
     private String desc;
     private File file;
     private Date dateCreated;
-    private String size;
+    private Double size;
     private boolean expanded;
     private File parentFile;
 
@@ -75,11 +75,11 @@ public class RowItem implements Comparable<RowItem>, Serializable {
         this.dateCreated = dateCreated;
     }
 
-    public String getSize() {
+    public Double getSize() {
         return size;
     }
 
-    public void setSize(String size) {
+    public void setSize(Double size) {
         this.size = size;
     }
 

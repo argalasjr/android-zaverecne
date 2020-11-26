@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_video_preview.view.*
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedItemBinding
 
 class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAdapter<FeedPost,

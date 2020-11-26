@@ -110,7 +110,7 @@ object FetchFiles {
     }
 
     @SuppressLint("DefaultLocale")
-    private fun getFileSize(file: File, unit: String): String {
+    public fun getFileSize(file: File, unit: String): Double {
 
         // Get length of file in bytes
         val fileSizeInBytes = file.length()
@@ -118,12 +118,16 @@ object FetchFiles {
         val fileSizeInKB = fileSizeInBytes / 1024
         //  Convert the KB to MegaBytes (1 MB = 1024 KBytes)
         val fileSizeInMB = fileSizeInKB.toDouble() / 1024.toDouble()
-        return if (unit == "MB") {
-            String.format("%.2f", fileSizeInMB) + " MB"
-        } else if (unit == "KB") {
-            String.format("%.2f", fileSizeInKB) + " KB"
-        } else {
-            String.format("%.2f", fileSizeInMB) + " MB"
+        return when (unit) {
+            "MB" -> {
+                fileSizeInMB
+            }
+            "KB" -> {
+                Double.fromBits(fileSizeInKB)
+            }
+            else -> {
+                fileSizeInMB
+            }
         }
     }
 
