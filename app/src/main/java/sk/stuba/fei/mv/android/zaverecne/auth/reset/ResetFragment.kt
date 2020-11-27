@@ -53,6 +53,11 @@ class ResetFragment : Fragment(){
 
         binding.apply {
 
+            backProfil.setOnClickListener(View.OnClickListener {
+                val navController = findNavController();
+                navController.navigate(R.id.action_resetFragment_to_profileFragment)
+            })
+
             resetViewModel.resetFormState.observe(viewLifecycleOwner,
                 Observer { resetFormState ->
                     if (resetFormState == null) {

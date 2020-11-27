@@ -27,7 +27,7 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
             val user = masterRepository.dbExistsActiveUser()
             _status.value = ApiStatus.LOADING
             if ( user != null ){
-                    if(user.profilePicSrc.length == 0){
+                    if(user.profilePicSrc.isEmpty()){
                         user.profilePicSrc = "https://www.csudh.edu/Assets/csudh-sites/slp/images/faculty-staff-photos/nophoto_icon-user-default.jpg"
                     }
                _loggedInUserView.value = LoggedInUserView(

@@ -77,6 +77,8 @@
     <string name="share">share</string>
     <string name="old_password">Enter old password</string>
     <string name="change_password_fail">Entered old password is wrong, reset failed.</string>
+    <string name="takePhotoProfile">Vytvoriť fotku fotoaparátom</string>
+    <string name="chooseGalleryProfile">Nahrať fotku z galérie</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"
