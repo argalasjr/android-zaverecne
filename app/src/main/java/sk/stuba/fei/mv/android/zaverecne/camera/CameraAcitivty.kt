@@ -65,12 +65,10 @@ class CameraAcitivty : AppCompatActivity(){
         })
 
 
-//        closeCam.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
+        close_cam.setOnClickListener(View.OnClickListener() {
+            finish()
+        });
+
         camera.addCameraListener(object : CameraListener() {
             override fun onVideoTaken(result: VideoResult) {
                 super.onVideoTaken(result)

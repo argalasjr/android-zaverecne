@@ -9,26 +9,46 @@
             type="sk.stuba.fei.mv.android.zaverecne.profile.ProfileViewModel" />
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-
-    android:id="@+id/container"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".profile.ProfileFragment">
 
-    <ImageView
-        android:id="@+id/backProfil"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_margin="5dp"
+    <RelativeLayout
+        android:id="@+id/navBar"
+        android:layout_width="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/ic_baseline_arrow_back_24"
-        />
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/backProfil"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="5dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:text="@string/profile"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            />
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/navBar"
+        tools:context=".profile.ProfileFragment">
 
         <de.hdodenhof.circleimageview.CircleImageView
-
             android:id="@+id/profile_image"
             android:layout_width="120dp"
             android:layout_height="120dp"
@@ -97,5 +117,7 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>
 
 </layout>

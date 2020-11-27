@@ -18,8 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="10dp"
-        android:background="@color/material_gray_200"
         android:layout_marginBottom="5dp"
+        android:background="@color/white"
         android:layout_marginTop="5dp"
         >
 
@@ -35,30 +35,18 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/postProfilePic"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:layout_centerInParent="true"
                 android:background="@drawable/circle"
                 android:layout_alignParentStart="true"
                 app:civ_border_color="@color/material_gray_400"
                 app:civ_border_width="1dp"
-                android:layout_margin="4dp"
+                android:layout_margin="2dp"
                 app:profile="@{post.profile}"
                 />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/postUserName"
-                android:layout_toEndOf="@id/postProfilePic"
-                android:layout_centerInParent="true"
-                android:text="@{post.username}"
-                android:textColor="#000"
-                android:textSize="19sp"
-                />
-
-
-<!--            <TextView-->
+            <!--            <TextView-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                android:id="@+id/postTitle"-->
@@ -67,9 +55,40 @@
 <!--                android:textSize="19sp"-->
 <!--                />-->
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:layout_toEndOf="@id/postProfilePic"
+                >
+
+            <TextView
+                android:id="@+id/postUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_gravity="top"
+                android:text="@{post.username}"
+                android:textColor="@color/material_gray_900"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/postCreated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_gravity="bottom"
+                android:text="@{post.created}"
+                android:textColor="@color/material_gray_700"
+                android:textSize="12sp"
+                />
+
+            </LinearLayout>
+
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:id="@+id/postMoreButton"
                 android:layout_centerInParent="true"
                 android:layout_alignParentEnd="true"
@@ -89,41 +108,37 @@
 
         </RelativeLayout>
 
-    <androidx.cardview.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        card_view:layout_constraintTop_toBottomOf="@id/postInfoLabel"
-        android:layout_marginLeft="@dimen/card_margin_horizontal"
-        android:layout_marginRight="@dimen/card_margin_horizontal"
-        android:elevation="10dp"
-        card_view:cardCornerRadius="2dp">
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+<!--        android:background="@color/material_gray_700">-->
 
-            <com.google.android.exoplayer2.ui.PlayerView
-                android:id="@+id/feedPostVideo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:layout_centerInParent="true"
-                android:padding="3dp"
-                app:controller_layout_id="@layout/exo_player_control_view_post"
-                android:scaleType="centerCrop"
-                card_view:resize_mode="fit"
-                app:video="@{post.videoSrc}"
-                app:thumbnail="@{feedPostThumbnail}"
-                />
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/feedPostVideo"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:padding="3dp"
+            app:controller_layout_id="@layout/exo_player_control_view_post"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
+            app:thumbnail="@{feedPostThumbnail}"
+            app:video="@{post.videoSrc}" />
 
             <ImageView
                 android:id="@+id/feedPostThumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:layout_centerInParent="true"
+                app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:visibility="gone"
                 android:scaleType="centerCrop"
                 app:thumbnail="@{post.videoSrc}" />
 
-    </androidx.cardview.widget.CardView>
+<!--    </androidx.cardview.widget.CardView>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

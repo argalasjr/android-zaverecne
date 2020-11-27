@@ -1,27 +1,26 @@
 package sk.stuba.fei.mv.android.zaverecne.feed
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import kotlinx.android.synthetic.main.feed_fragment.*
+import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.camera.CameraAcitivty
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
-
 import sk.stuba.fei.mv.android.zaverecne.gallery.FolderRecycleView
 
 
-class FeedFragment : Fragment() {
+class FeedFragment : Fragment(){
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +44,10 @@ class FeedFragment : Fragment() {
         binding.profilePic.setOnClickListener(View.OnClickListener {
 //            Log.d("Profile", "profile")
             val navController = findNavController();
-                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
+            navController.navigate(R.id.action_feedFragment_to_profileFragment)
         })
+
+
 
 
         binding.speedDial.addActionItem(
@@ -111,7 +112,6 @@ class FeedFragment : Fragment() {
     }
 
 
-
     private fun captureVideo() {
         // Permission has already been granted
         val intent = Intent(activity, CameraAcitivty::class.java)
@@ -125,10 +125,6 @@ class FeedFragment : Fragment() {
         startActivity(i, options.toBundle())
     }
 
-//    private fun loadFragment(fragment: Fragment){
-//        val transaction = parentFragmentManager.beginTransaction()
-//        transaction.replace(R.id., fragment)
-//        transaction.disallowAddToBackStack()
-//        transaction.commit()
-//    }
+
 }
+

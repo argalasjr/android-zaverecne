@@ -37,46 +37,46 @@
         android:background="#40000000"
         android:layout_height="45dp">
 
-        <ImageView
-            android:id="@+id/flash_on"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="1"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:foregroundGravity="center_vertical"
-            android:src="@drawable/ic_baseline_flash_on_24"
-            android:visibility="gone"
-            app:backgroundTint="@color/material_gray_300"
-            android:elevation="8dp"
-            app:maxImageSize="40dp" />
+<!--        <ImageView-->
+<!--            android:id="@+id/flash_on"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:alpha="1"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:foregroundGravity="center_vertical"-->
+<!--            android:src="@drawable/ic_baseline_flash_on_24"-->
+<!--            android:visibility="gone"-->
+<!--            app:backgroundTint="@color/material_gray_300"-->
+<!--            android:elevation="8dp"-->
+<!--            app:maxImageSize="40dp" />-->
 
 
-        <ImageView
-            android:id="@+id/flash_off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="1"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:foregroundGravity="center_vertical"
-            android:src="@drawable/ic_baseline_flash_off_24"
-            android:visibility="visible"
-            app:backgroundTint="@color/material_gray_700"
-            app:elevation="8dp"
-            />
+<!--        <ImageView-->
+<!--            android:id="@+id/flash_off"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:alpha="1"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:foregroundGravity="center_vertical"-->
+<!--            android:src="@drawable/ic_baseline_flash_off_24"-->
+<!--            android:visibility="visible"-->
+<!--            app:backgroundTint="@color/material_gray_700"-->
+<!--            app:elevation="8dp"-->
+<!--            />-->
 
-        <!--        <ImageButton-->
-        <!--            android:id="@+id/close_cam"-->
-        <!--            style="@style/ExoMediaButton"-->
-        <!--            android:layout_gravity="start"-->
-        <!--            android:maxWidth="45dp"-->
-        <!--            android:maxHeight="45dp"-->
-        <!--            android:elevation="10dp"-->
-        <!--            android:alpha="0.9"-->
-        <!--            android:layout_alignParentTop="true"-->
-        <!--            android:layout_alignParentStart="true"-->
-        <!--            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"/>-->
+                <ImageButton
+                    android:id="@+id/close_cam"
+                    style="@style/ExoMediaButton"
+                    android:layout_gravity="start"
+                    android:maxWidth="45dp"
+                    android:maxHeight="45dp"
+                    android:elevation="10dp"
+                    android:alpha="0.7"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    app:srcCompat="@drawable/ic_baseline_arrow_back_24"/>
 
         <Chronometer
             android:layout_width="wrap_content"
