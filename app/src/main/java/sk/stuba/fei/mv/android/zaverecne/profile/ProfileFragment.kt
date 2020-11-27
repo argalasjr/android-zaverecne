@@ -4,9 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -30,7 +33,9 @@ import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 
 
 class ProfileFragment : Fragment() {
@@ -41,6 +46,7 @@ class ProfileFragment : Fragment() {
 
     val REQUEST_CODE = 100
 
+    val REQUEST_CODE_CAM = 101
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -87,10 +93,12 @@ class ProfileFragment : Fragment() {
                 val chooseGalleryButton = btnsheet.findViewById<LinearLayout>(R.id.chooseGalleryProfile)
                 chooseGalleryButton.setOnClickListener(View.OnClickListener {
                     openGalleryForImage()
+                    dialog.dismiss()
                 })
                 val chooseTakePhotoButton = btnsheet.findViewById<LinearLayout>(R.id.takePhotoProfile)
                 chooseTakePhotoButton.setOnClickListener(View.OnClickListener {
                    openCamera()
+                    dialog.dismiss()
                 })
             })
 
@@ -99,10 +107,10 @@ class ProfileFragment : Fragment() {
     }
 
     private fun openCamera() {
-//        val intent = Intent(Intent.ACTION_PICK)
-//        intent.type = "image/*"
-//        startActivityForResult(intent, REQUEST_CODE)
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(cameraIntent, REQUEST_CODE_CAM)
     }
+
 
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -114,19 +122,48 @@ class ProfileFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
 //            bindprofileImage.setImageURI(data?.data) // handle chosen image
-            uploadProfilePic(data?.data)
+            uploadProfilePic(File(data?.data?.path))
+        }
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_CAM && data != null){
+//            imageView.setImageBitmap(data.extras?.get("data") as Bitmap)
+            val file = bitmapToFile(data.extras?.get("data") as Bitmap,"profile.png")
+            uploadProfilePic(file)
         }
     }
 
-    fun uploadProfilePic(photoUri: Uri?){
+    fun bitmapToFile(bitmap: Bitmap, fileNameToSave: String): File? { // File name like "image.png"
+        //create a file to write bitmap data
+        var file: File? = null
+        return try {
+            file = File(Environment.getExternalStorageDirectory().toString() + File.separator + fileNameToSave)
+            file.createNewFile()
+
+            //Convert bitmap to byte array
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos) // YOU can also save it in JPEG
+            val bitmapdata = bos.toByteArray()
+
+            //write the bytes in file
+            val fos = FileOutputStream(file)
+            fos.write(bitmapdata)
+            fos.flush()
+            fos.close()
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            file // it will return null
+        }
+    }
+
+    fun uploadProfilePic(file: File?){
         GlobalScope.launch { // launch a new coroutine in background and continue
 //                _status.value = ApiStatus.LOADING
             try {
                 val activeUser = MasterRepository.dbExistsActiveUser()
                 activeUser?.let {
-                    MasterRepository.uploadProfilePicture(activeUser.token, File(photoUri?.path))
-
-                    Log.d("photo", File(photoUri?.path).path)
+                    if (file != null) {
+                        MasterRepository.uploadProfilePicture(activeUser.token, file)
+                    }
 
                     val snackbar = Snackbar
                         .make(container, "Succesfully uploaded.", Snackbar.LENGTH_LONG)
