@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1090383486244",
+    "firebase_url": "https://android-zaverene.firebaseio.com",
+    "project_id": "android-zaverene",
+    "storage_bucket": "android-zaverene.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090383486244:android:759cffb281e3fb5a6f67b1",
+        "android_client_info": {
+          "package_name": "sk.stuba.fei.mv.android.zaverecne"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090383486244-mepshltfckv938t7k5vul3v2cpmkj1s5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwpt0N9xElAqLL7QngPsGHaH57csiASO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090383486244-mepshltfckv938t7k5vul3v2cpmkj1s5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

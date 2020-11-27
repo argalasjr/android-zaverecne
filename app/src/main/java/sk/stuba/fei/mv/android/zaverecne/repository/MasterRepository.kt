@@ -2,6 +2,7 @@ package sk.stuba.fei.mv.android.zaverecne.repository
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.JsonDataException
 import okhttp3.Headers
 import okhttp3.MultipartBody
@@ -352,18 +353,26 @@ object MasterRepository {
         )
 
     private fun handleException(fn: String, e: Throwable): Int {
+
         when (e) {
+
             is HttpException -> {
+                FirebaseCrashlytics.getInstance().log("HTTP error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message()}");
                 Log.e(fn, "HTTP error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message()}")
                 return e.code()
             }
             is ProtocolException -> {
+                FirebaseCrashlytics.getInstance().log( "Protocol error. Function $fn failed with exception: ${e.javaClass.canonicalName}.")
                 Log.e(fn, "Protocol error. Function $fn failed with exception: ${e.javaClass.canonicalName}.")
             }
             is JsonDataException -> {
+                FirebaseCrashlytics.getInstance().log("JSON data error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
                 Log.e(fn, "JSON data error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
             }
-            else -> Log.e(fn, "Error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
+            else ->{
+                FirebaseCrashlytics.getInstance().log("Error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
+                Log.e(fn, "Error. Function $fn failed with exception: ${e.javaClass.canonicalName} and message: ${e.message}")
+            }
         }
         return 0
     }
