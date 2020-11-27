@@ -64,5 +64,16 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_resetFragment"
+            app:destination="@id/resetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetFragment"
+        android:name="sk.stuba.fei.mv.android.zaverecne.auth.reset.ResetFragment"
+        android:label="ResetFragment" >
+        <action
+            android:id="@+id/action_resetFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 </navigation>

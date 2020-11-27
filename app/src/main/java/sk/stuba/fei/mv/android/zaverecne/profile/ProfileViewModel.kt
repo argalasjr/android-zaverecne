@@ -44,4 +44,11 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
 
 
     }
+
+
+    fun logout(){
+        viewModelScope.launch {
+            masterRepository.dbClearUsers();
+        }
+    }
 }

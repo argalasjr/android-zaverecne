@@ -73,6 +73,18 @@ class ProfileFragment : Fragment() {
             profileImage.setOnClickListener(View.OnClickListener {
                 openGalleryForImage()
             })
+
+            linkChangePassButton.setOnClickListener(View.OnClickListener {
+                val navController = findNavController();
+                navController.navigate(R.id.action_profileFragment_to_resetFragment)
+            })
+
+
+            linkLogoutButton.setOnClickListener(View.OnClickListener {
+                profileViewModel.logout()
+                val navController = findNavController();
+                navController.navigate(R.id.action_profileFragment_to_loginFragment)
+            })
         }
 
         return binding.root

@@ -75,6 +75,8 @@
     <string name="user_email">User Email</string>
     <string name="user_name">User Name</string>
     <string name="share">share</string>
+    <string name="old_password">Enter old password</string>
+    <string name="change_password_fail">Entered old password is wrong, reset failed.</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"

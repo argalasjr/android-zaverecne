@@ -29,7 +29,7 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
     init {
 
         viewModelScope.launch {
-
+            //masterRepository.dbClearUsers()
             val user = masterRepository.dbExistsActiveUser()
 
             if ( user != null ){
