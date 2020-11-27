@@ -31,6 +31,7 @@
     <!--color on surface (light)-->
     <color name="black_900">#000000</color>
 
+    <color name="roundedBottomSheetPrimaryBackground">#FFFFFF</color>
 
     <color name="inbox_primary">#4285f4</color>
     <color name="inbox_primary_dark">#3367d6</color>

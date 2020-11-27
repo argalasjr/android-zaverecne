@@ -13,11 +13,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_video_preview.*
+import kotlinx.android.synthetic.main.bottom_sheet_dialog.*
+import kotlinx.android.synthetic.main.bottom_sheet_dialog.view.*
 import kotlinx.android.synthetic.main.profile_fragment.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -71,11 +77,31 @@ class ProfileFragment : Fragment() {
             })
 
             profileImage.setOnClickListener(View.OnClickListener {
-                openGalleryForImage()
-            })
-        }
+                val btnsheet = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
+                val dialog = RoundedBottomSheetDialog(context!!)
+                dialog.setContentView(btnsheet)
+                btnsheet.setOnClickListener {
+                }
+                dialog.show()
 
+                val chooseGalleryButton = btnsheet.findViewById<LinearLayout>(R.id.chooseGalleryProfile)
+                chooseGalleryButton.setOnClickListener(View.OnClickListener {
+                    openGalleryForImage()
+                })
+                val chooseTakePhotoButton = btnsheet.findViewById<LinearLayout>(R.id.takePhotoProfile)
+                chooseTakePhotoButton.setOnClickListener(View.OnClickListener {
+                   openCamera()
+                })
+            })
+
+        }
         return binding.root
+    }
+
+    private fun openCamera() {
+//        val intent = Intent(Intent.ACTION_PICK)
+//        intent.type = "image/*"
+//        startActivityForResult(intent, REQUEST_CODE)
     }
 
     private fun openGalleryForImage() {
