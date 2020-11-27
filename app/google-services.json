@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1090383486244-tupqkj08id37okaum1nfdsvhkehh6ghu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sk.stuba.fei.mv.android.zaverecne",
+            "certificate_hash": "5598f1764cf1096d086c5fc65737441730d44333"
+          }
+        },
+        {
           "client_id": "1090383486244-mepshltfckv938t7k5vul3v2cpmkj1s5.apps.googleusercontent.com",
           "client_type": 3
         }
