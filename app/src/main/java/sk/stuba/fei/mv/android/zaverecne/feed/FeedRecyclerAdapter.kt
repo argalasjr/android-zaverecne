@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -11,13 +12,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_video_preview.*
 import kotlinx.android.synthetic.main.feed_item.view.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedItemBinding
-import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.File
 
 class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAdapter<FeedPost,
@@ -35,15 +31,16 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
         holder.itemView.postMoreButton.setOnClickListener {
             onClickListener.onClick(feedPost)
         }
-
         holder.bind(feedPost)
+        Log.d("feedPost", position.toString() + "\n" + feedPost.postId + "\n" + feedPost.username)
+
+
     }
 
     class FeedPostViewHolder(private val binding: FeedItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(feedPost: FeedPost) {
             binding.post = feedPost
             binding.executePendingBindings()
-
         }
 
     }

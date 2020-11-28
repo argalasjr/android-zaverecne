@@ -37,15 +37,15 @@
         android:layout_alignParentTop="true"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"/>
 
-    <ImageButton
-        android:id="@+id/exo_save"
-        style="@style/ExoMediaButton"
-        android:layout_gravity="start"
-        android:elevation="8dp"
-        android:visibility="visible"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        app:srcCompat="@drawable/ic_baseline_done_outline_24"/>
+        <ImageButton
+            android:id="@+id/exo_save"
+            style="@style/ExoMediaButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="start"
+            android:elevation="8dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_baseline_done_outline_24" />
 
 
     </RelativeLayout>

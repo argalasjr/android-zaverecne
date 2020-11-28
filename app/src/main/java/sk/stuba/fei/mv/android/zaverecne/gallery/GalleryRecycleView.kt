@@ -5,35 +5,32 @@ import android.app.SearchManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.transition.Slide
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.animation.AnticipateOvershootInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.recycle_view_gallery.*
+import sk.stuba.fei.mv.android.zaverecne.MainActivity
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.beans.RowItem
-import sk.stuba.fei.mv.android.zaverecne.camera.VideoPreview
-import java.io.File
+import sk.stuba.fei.mv.android.zaverecne.video.VideoFragment
 import java.io.IOException
 import java.io.Serializable
 import java.util.*
+
 
 class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
     VideoRecycleViewAdapter.RowItemsListener, Serializable {
@@ -93,10 +90,6 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
 
     override fun onBackPressed() {
         // close search view on back button pressed
-        if (!searchView!!.isIconified) {
-            searchView!!.isIconified = true
-            return
-        }
         super.onBackPressed()
     }
 
@@ -143,18 +136,14 @@ class GalleryRecycleView : AppCompatActivity(), SearchView.OnQueryTextListener,
 //        }
         if (rowItem != null) {
             if (isVideoValid(rowItem.file.absoluteFile.toString())) {
-                val i = Intent(this, VideoPreview::class.java)
-                i.data = Uri.fromFile(File(rowItem.file.absolutePath))
-                val activityOptionsCompat = imageView?.let {
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        this,
-                        it,
-                        ViewCompat.getTransitionName(imageView)!!
-                    )
-                }
-                if (activityOptionsCompat != null) {
-                    startActivity(i, activityOptionsCompat.toBundle())
-                }
+                val fragmentManager: FragmentManager = supportFragmentManager
+                val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+                val myFragment = VideoFragment()
+                val b = Bundle()
+                b.putString("videoUri", rowItem.file.absolutePath)
+                myFragment.arguments = b
+                fragmentTransaction.replace(R.id.media_root_layout, myFragment).commit()
+
             }
         }
     }

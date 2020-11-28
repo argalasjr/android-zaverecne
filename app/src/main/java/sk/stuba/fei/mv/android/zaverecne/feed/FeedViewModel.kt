@@ -1,10 +1,14 @@
 package sk.stuba.fei.mv.android.zaverecne.feed
 
 import android.app.Application
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.feed_fragment.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.network.UserResult
@@ -89,6 +93,28 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                 _status.value = ApiStatus.ERROR
             }
 
+        }
+    }
+
+    fun deleteUserPost(view: View?, feedPost: FeedPost){
+        viewModelScope.launch { // launch a new coroutine in background and continue
+                _status.value = ApiStatus.LOADING
+            try {
+                val activeUser = MasterRepository.dbExistsActiveUser()
+                activeUser?.let {
+                    MasterRepository.removePost(activeUser.token, feedPost.postId)
+                    val snackbar = Snackbar
+                            .make(
+                                    view!!,
+                                    "The post has been deleted.",
+                                    Snackbar.LENGTH_LONG
+                            )
+                    snackbar.show()
+                    _status.value = ApiStatus.DONE
+                }
+            } catch (e: Exception) {
+                    _status.value = ApiStatus.ERROR
+            }
         }
     }
 

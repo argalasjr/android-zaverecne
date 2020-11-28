@@ -16,19 +16,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
-import kotlinx.android.synthetic.main.activity_camera_acitivty.*
-import kotlinx.android.synthetic.main.activity_video_preview.*
+
 import kotlinx.android.synthetic.main.bottom_sheet_dialog.*
 import kotlinx.android.synthetic.main.bottom_sheet_dialog.view.*
+import kotlinx.android.synthetic.main.camera_fragment.*
 import kotlinx.android.synthetic.main.profile_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getRealPathFromURI
+import sk.stuba.fei.mv.android.zaverecne.gallery.FolderRecycleView
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -93,21 +96,29 @@ class ProfileFragment : Fragment() {
                 val chooseGalleryButton =
                         btnsheet.findViewById<LinearLayout>(R.id.chooseGalleryProfile)
                 chooseGalleryButton.setOnClickListener(View.OnClickListener {
-                    openGalleryForImage()
+                    if (checkPermissionStorage()) {
+                        openGalleryForImage()
+                    } else {
+                        requestPermission()
+                    }
                     dialog.dismiss()
                 })
                 val chooseTakePhotoButton =
                         btnsheet.findViewById<LinearLayout>(R.id.takePhotoProfile)
                 chooseTakePhotoButton.setOnClickListener(View.OnClickListener {
 
-                    dispatchTakePictureIntent()
+                    if(checkPermissionCamera()){
+                        dispatchTakePictureIntent()
+                    }else{
+                        requestPermissionCamera()
+                    }
                     dialog.dismiss()
 
                 })
 
                 val deleteProfilePic =  btnsheet.findViewById<LinearLayout>(R.id.deletePhoto)
                 deleteProfilePic.setOnClickListener(View.OnClickListener {
-                    profileViewModel.deleteProfilePhoto()
+                    profileViewModel.deleteProfilePhoto(it)
                     dialog.dismiss()
                 })
             })
@@ -128,11 +139,6 @@ class ProfileFragment : Fragment() {
         return binding.root
 
 
-    }
-
-    private fun openCamera() {
-//        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//        startActivityForResult(cameraIntent, REQUEST_CODE_CAM)
     }
 
     private fun dispatchTakePictureIntent() {
@@ -162,7 +168,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-
     private fun openGalleryForImage() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -174,7 +179,7 @@ class ProfileFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
 //            bindprofileImage.setImageURI(data?.data) // handle chosen image
             val path = data?.data
-            val realPath = getRealPathFromURI(context,path)
+            val realPath = getRealPathFromURI(activity,path)
             val file = File(realPath)
             Log.d("filePath", file.absolutePath);
             viewModel.uploadProfilePhoto(container, file)
@@ -187,18 +192,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    fun getRealPathFromURI(context: Context?, contentUri: Uri?): String? {
-        var cursor: Cursor = activity!!.contentResolver.query(contentUri!!, null, null, null, null)!!
-        cursor.moveToFirst()
-        var document_id = cursor.getString(0)
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1)
-        cursor.close()
-        cursor = activity!!.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", arrayOf(document_id), null)!!
-        cursor.moveToFirst()
-        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-        cursor.close()
-        return path
-    }
 
     override fun onRequestPermissionsResult(
             requestCode: Int,
@@ -206,18 +199,39 @@ class ProfileFragment : Fragment() {
             grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("value", "Permission Granted, Now you can use local drive .")
+                openGalleryForImage()
+            } else {
+                Log.e("value", "Permission Denied, You cannot use local drive .")
+            }
+            PERMISSION_REQUEST_CODE_CAM -> cameraPermissionGranted(grantResults)
+        }
+    }
+
+    fun cameraPermissionGranted(grantResults: IntArray){
         var valid = true
         for (grantResult in grantResults) {
             valid = valid && grantResult == PackageManager.PERMISSION_GRANTED
         }
         if (valid && !camera.isOpened) {
-            openCamera()
+            dispatchTakePictureIntent()
         }
     }
 
-    private fun checkPermission(): Boolean {
+    private fun checkPermissionCamera(): Boolean {
         val result =
                 this.let { ContextCompat.checkSelfPermission(context!!, Manifest.permission.CAMERA) }
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun checkPermissionStorage(): Boolean {
+        val result = ContextCompat.checkSelfPermission(
+            context!!,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
         return result == PackageManager.PERMISSION_GRANTED
     }
 
@@ -236,6 +250,23 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            activity!!,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun requestPermissionCamera() {
+        ActivityCompat.requestPermissions(
+            activity!!,
+            arrayOf(Manifest.permission.CAMERA),
+            PERMISSION_REQUEST_CODE_CAM
+        )
+    }
+
+
     fun bitmapToFile(bitmap: Bitmap, fileNameToSave: String): File? { // File name like "image.png"
         //create a file to write bitmap data
         var file: File? = null
@@ -246,7 +277,7 @@ class ProfileFragment : Fragment() {
 
             //Convert bitmap to byte array
             val bos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 0, bos) // YOU can also save it in JPEG
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos) // YOU can also save it in JPEG
             val bitmapdata = bos.toByteArray()
 
             //write the bytes in file
@@ -259,6 +290,11 @@ class ProfileFragment : Fragment() {
             e.printStackTrace()
             file // it will return null
         }
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 100
+        private const val PERMISSION_REQUEST_CODE_CAM = 101
     }
 
 }

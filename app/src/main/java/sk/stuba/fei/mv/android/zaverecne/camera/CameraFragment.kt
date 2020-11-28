@@ -2,81 +2,98 @@ package sk.stuba.fei.mv.android.zaverecne.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.net.Uri
 import android.os.Build
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
 import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.VideoResult
-import com.otaliastudios.cameraview.controls.*
+import com.otaliastudios.cameraview.controls.Facing
+import com.otaliastudios.cameraview.controls.Flash
+import com.otaliastudios.cameraview.controls.Mode
+import com.otaliastudios.cameraview.controls.VideoCodec
 import com.otaliastudios.cameraview.size.Size
-import kotlinx.android.synthetic.main.activity_camera_acitivty.*
+import kotlinx.android.synthetic.main.camera_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.anim.Animations.animateViewFadeIn
+import sk.stuba.fei.mv.android.zaverecne.anim.Animations.animateViewFadeOut
+import sk.stuba.fei.mv.android.zaverecne.databinding.CameraFragmentBinding
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class CameraAcitivty : AppCompatActivity(){
+class CameraFragment : Fragment() {
 
-    private val TAG = CameraAcitivty::class.qualifiedName
     private var mVideoFolder: File? = null
     private var mVideoFileName: String? = null
     private var mIsRecording = false
 
+    companion object {
+        fun newInstance() = CameraFragment()
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera_acitivty)
-        camera.setLifecycleOwner(this)
-        camera.mode = Mode.VIDEO
-//        camera.audio = Audio.ON
-        camera.facing = Facing.BACK
-        camera.videoCodec = VideoCodec.H_264
+    private lateinit var viewModel: CameraViewModel
 
-        camera.flash = Flash.OFF
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = CameraFragmentBinding.inflate(inflater)
+
+        val application = requireNotNull(this.activity).application
+
+        val viewModelFactory = CameraViewModelFactory(application)
+
+        val cameraViewModel = ViewModelProvider(this, viewModelFactory).get(CameraViewModel::class.java)
+
+        binding.camera.setLifecycleOwner(this)
+        binding.camera.mode = Mode.VIDEO
+        binding.camera.facing = Facing.BACK
+        binding.camera.videoCodec = VideoCodec.H_264
+        binding.camera.flash = Flash.OFF
 
         createVideoFolder()
-        videoOnlineImageButton.setOnClickListener(View.OnClickListener {
-
+        binding.videoOnlineImageButton.setOnClickListener(View.OnClickListener {
             mIsRecording = true
             checkWriteStoragePermission()
         })
 
-        videoRecording.setOnClickListener(View.OnClickListener {
+        binding.videoRecording.setOnClickListener(View.OnClickListener {
             stopRecording()
             animateViewFadeOut(videoRecording)
             animateViewFadeIn(videoOnlineImageButton)
         })
 
 
-        close_cam.setOnClickListener(View.OnClickListener() {
-            finish()
+        binding.closeCam.setOnClickListener(View.OnClickListener() {
+            val navController = findNavController();
+            navController.navigate(R.id.action_cameraFragment_to_feedFragment)
         });
 
-        camera.addCameraListener(object : CameraListener() {
+        binding.camera.addCameraListener(object : CameraListener() {
             override fun onVideoTaken(result: VideoResult) {
                 super.onVideoTaken(result)
                 Log.w("daAD", "onVideoTaken called! Launching activity.")
-                sendIntent(result)
+                navigateToVideo(result)
             }
 
             override fun onVideoRecordingStart() {
-
                 // Notifies that the actual video recording has started.
                 // Can be used to show some UI indicator for video recording or counting time.
             }
@@ -87,9 +104,7 @@ class CameraAcitivty : AppCompatActivity(){
             }
         })
 
-
-        // This will be the size of videos taken with takeVideo().
-        camera.setVideoSize { source ->
+        binding.camera.setVideoSize { source ->
             val dm = resources.displayMetrics
             val densityDpi = dm.densityDpi
             val height = dm.heightPixels
@@ -99,12 +114,12 @@ class CameraAcitivty : AppCompatActivity(){
             //                optimalSizes.add(getOptimalPreviewSize(source, width, height));
             Log.d("size", "velkost: $width, $height")
             Log.d(
-                    "size",
-                    "velkost: " + getOptimalPreviewSize(
-                            source,
-                            width,
-                            height
-                    ).toString()
+                "size",
+                "velkost: " + getOptimalPreviewSize(
+                    source,
+                    width,
+                    height
+                ).toString()
             )
             for (s in source) {
                 Log.d("size", "velkost: $s")
@@ -120,10 +135,10 @@ class CameraAcitivty : AppCompatActivity(){
         }
 
         //CHANGE CAMERA - FRONT/BACK
-        flip_facing_camera.setOnClickListener(View.OnClickListener {
-            if (this.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)!!) {
-                if (camera.facing == Facing.FRONT) {
-                    camera.facing = Facing.BACK
+        binding.flipFacingCamera.setOnClickListener(View.OnClickListener {
+            if (activity!!.packageManager?.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)!!) {
+                if (binding.camera.facing == Facing.FRONT) {
+                    binding.camera.facing = Facing.BACK
 //                    if (hasFlash) {
 //                        flashOn.setVisibility(View.VISIBLE)
 //                        flashOff.setVisibility(View.GONE)
@@ -132,24 +147,32 @@ class CameraAcitivty : AppCompatActivity(){
 //                        flashOff.setVisibility(View.VISIBLE)
 //                    }
                 } else {
-                    camera.facing = Facing.FRONT
+                    binding.camera.facing = Facing.FRONT
 //                    flashOn.setVisibility(View.GONE)
 //                    flashOff.setVisibility(View.GONE)
                 }
                 rotateFlipCameraIcon()
             } else {
                 Toast.makeText(
-                        this,
-                        "Your device doesn't have a front camera..",
-                        Toast.LENGTH_SHORT
+                    context,
+                    "Your device doesn't have a front camera..",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         })
+
+        return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(CameraViewModel::class.java)
+        // TODO: Use the ViewModel
     }
 
     private fun checkPermission(): Boolean {
         val result =
-            this.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) }
+            this.let { ContextCompat.checkSelfPermission(context!!, Manifest.permission.CAMERA) }
         return result == PackageManager.PERMISSION_GRANTED
     }
 
@@ -162,12 +185,12 @@ class CameraAcitivty : AppCompatActivity(){
 
     private fun rotateFlipCameraIcon() {
         flip_facing_camera.startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.rotate)
+            AnimationUtils.loadAnimation(context, R.anim.rotate)
         )
     }
 
     fun getOptimalPreviewSize(
-            sizes: List<Size>?, w: Int, h: Int
+        sizes: List<Size>?, w: Int, h: Int
     ): Size? {
         // Use a very small tolerance because we want an exact match.
         val ASPECT_TOLERANCE = 0.1
@@ -211,6 +234,7 @@ class CameraAcitivty : AppCompatActivity(){
         mIsRecording = false
         camera.stopVideo() //ukoncenie zaznamenavania
         flip_facing_camera.visibility = View.VISIBLE
+        close_cam.visibility = View.VISIBLE
 
     }
 
@@ -238,8 +262,8 @@ class CameraAcitivty : AppCompatActivity(){
     private fun createVideoFolder() {
         val aDirArray = this.let {
             ContextCompat.getExternalFilesDirs(
-                    it,
-                    Environment.DIRECTORY_DCIM
+                context!!,
+                Environment.DIRECTORY_DCIM
             )
         }
 
@@ -251,18 +275,19 @@ class CameraAcitivty : AppCompatActivity(){
         }
     }
 
-    private fun sendIntent(result: VideoResult) {
-        val intent = Intent(this, VideoPreview::class.java)
-        intent.data = Uri.fromFile(result.file)
-        Log.d(TAG, "video uri: " + Uri.fromFile(result.file))
-        startActivity(intent)
+    private fun navigateToVideo(result: VideoResult) {
+
+        val args = Bundle()
+        args.putString("videoUri", result.file.absolutePath);
+        val navController = findNavController();
+        navController.navigate(R.id.action_cameraFragment_to_videoFragment,args)
     }
 
     @Throws(IOException::class)
     private fun createVideoFileName(): File? {
         @SuppressLint("SimpleDateFormat") val timestamp =
             SimpleDateFormat("yyyyMMdd_HHmmss").format(
-                    Date()
+                Date()
             )
         val prepend = "VIDEO_" + timestamp + "_"
         val videoFile = File.createTempFile(prepend, ".mp4", mVideoFolder)
@@ -271,9 +296,9 @@ class CameraAcitivty : AppCompatActivity(){
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String?>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         var valid = true
@@ -287,31 +312,24 @@ class CameraAcitivty : AppCompatActivity(){
 
     private fun checkWriteStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // kontrola povolenia pre zápis do uložiska
             if (this.let { ContextCompat.checkSelfPermission(
-                            it,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) }
+                    context!!,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) }
                 == PackageManager.PERMISSION_GRANTED
             ) {
                 try {
-                    // vytvaranie výstupného súboru pre zaznaménavanie
                     createVideoFileName()
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
                 if (mIsRecording) {
-                    // metóda spúšťa zaznamenávanie spolu s hudbou v pozadí
                     captureVideo()
 
-                    // nastavovanie parametrov pre komponenty zabudované v kamere
-                    // určite komponenty sú neviditeľne počas zaznamenávania
-                    // GONE -  parametrom nastavíme neviditeľnosť komponenta
-                    // VISIBLE -  parametrom nastavíme viditeľnosť komponenta
+                    close_cam.visibility = View.GONE
                     flip_facing_camera.visibility = View.GONE
                     animateViewFadeOut(videoOnlineImageButton)
                     animateViewFadeIn(videoRecording)
-
                     if (camera.facing != Facing.BACK) {
 //                        flashOn.setVisibility(View.GONE)
 //                        flashOff.setVisibility(View.GONE)
@@ -324,14 +342,14 @@ class CameraAcitivty : AppCompatActivity(){
             } else {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(
-                            this,
-                            "app needs to be able to save videos",
-                            Toast.LENGTH_SHORT
+                        context,
+                        "app needs to be able to save videos",
+                        Toast.LENGTH_SHORT
                     )
                         .show()
                 }
                 requestPermissions(
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1
                 )
             }
         } else {
@@ -342,7 +360,8 @@ class CameraAcitivty : AppCompatActivity(){
             }
             if (mIsRecording) {
                 captureVideo()
-                flip_facing_camera.setVisibility(View.GONE)
+                close_cam.visibility = View.GONE
+                flip_facing_camera.visibility = View.GONE
                 //closeCam.setVisibility(View.GONE);
 //                animateViewFadeOut(startRecordBtn) //GONE
 //                animateViewFadeIn(recordingBtn) //VISIBLE
@@ -361,29 +380,5 @@ class CameraAcitivty : AppCompatActivity(){
         }
     }
 
-    private fun animateViewFadeOut(view: View) {
-        val fadeOut = AnimationUtils.loadAnimation(this, R.anim.scale_down)
-        fadeOut.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {
-                view.visibility = View.GONE
-            }
 
-            override fun onAnimationEnd(animation: Animation) {}
-            override fun onAnimationRepeat(animation: Animation) {}
-        })
-        view.startAnimation(fadeOut)
-    }
-
-    private fun animateViewFadeIn(view: View) {
-        val fadeIn = AnimationUtils.loadAnimation(this, R.anim.scale_up)
-        fadeIn.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {
-                view.visibility = View.VISIBLE
-            }
-
-            override fun onAnimationEnd(animation: Animation) {}
-            override fun onAnimationRepeat(animation: Animation) {}
-        })
-        view.startAnimation(fadeIn)
-    }
 }

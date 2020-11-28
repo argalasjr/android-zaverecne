@@ -37,13 +37,6 @@
         android:theme="@style/Theme.Design.Light.NoActionBar"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
-        <activity android:name=".camera.VideoPreview"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Design.NoActionBar" />
-        <activity
-            android:name=".camera.CameraAcitivty"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Design.NoActionBar" />
         <activity
             android:name=".gallery.GalleryRecycleView"
             android:label="@string/gallery_recycle_view"

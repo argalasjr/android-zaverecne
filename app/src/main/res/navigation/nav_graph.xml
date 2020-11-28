@@ -31,6 +31,12 @@
         <action
             android:id="@+id/action_feedFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_videoFragment"
+            app:destination="@id/videoFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -60,6 +66,7 @@
         android:label="ProfileFragment" >
         <action
             android:id="@+id/action_profileFragment_to_feedFragment"
+            app:popUpToInclusive="true"
             app:destination="@id/feedFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
@@ -75,5 +82,31 @@
         <action
             android:id="@+id/action_resetFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="sk.stuba.fei.mv.android.zaverecne.video.VideoFragment"
+        android:label="video_fragment"
+        tools:layout="@layout/video_fragment" >
+        <action
+            android:id="@+id/action_videoFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_videoFragment_to_feedFragment"
+            app:destination="@id/feedFragment"
+            app:popUpToInclusive="true"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="sk.stuba.fei.mv.android.zaverecne.camera.CameraFragment"
+        android:label="camera_fragment"
+        tools:layout="@layout/camera_fragment" >
+        <action
+            android:id="@+id/action_cameraFragment_to_videoFragment"
+            app:destination="@id/videoFragment" />
+        <action
+            android:id="@+id/action_cameraFragment_to_feedFragment"
+            app:destination="@id/feedFragment" />
     </fragment>
 </navigation>

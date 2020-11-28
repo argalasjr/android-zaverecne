@@ -21,6 +21,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.net.toUri
@@ -70,6 +72,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
     val adapter = recyclerView.adapter as FeedRecyclerAdapter
     val topSpacingDecorator = TopSpacingItemDecoration(30)
     recyclerView.addItemDecoration(topSpacingDecorator)
+    recyclerView.scheduleLayoutAnimation()
     adapter.submitList(data)
 }
 
@@ -87,7 +90,6 @@ fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
         setKeepContentOnPlayerReset(true)
         this.controllerHideOnTouch = true
         this.controllerShowTimeoutMs = 1000
-
 
         val fullUrl = repo.mediaUrlBase + videoSrc
         val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))

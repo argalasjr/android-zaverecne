@@ -1,6 +1,11 @@
 package sk.stuba.fei.mv.android.zaverecne.fetchfiles
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import sk.stuba.fei.mv.android.zaverecne.beans.Album
 import sk.stuba.fei.mv.android.zaverecne.beans.RowItem
 import java.io.File
@@ -134,4 +139,33 @@ object FetchFiles {
     private fun getDateCreated(position: Int, files: List<File>): Date {
         return Date(files[position].lastModified())
     }
+
+    fun getRealPathFromURI(activity: Activity?, contentUri: Uri?): String? {
+        var cursor: Cursor = activity!!.contentResolver.query(contentUri!!, null, null, null, null)!!
+        cursor.moveToFirst()
+        var document_id = cursor.getString(0)
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1)
+        cursor.close()
+        cursor = activity!!.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", arrayOf(document_id), null)!!
+        cursor.moveToFirst()
+        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
+        cursor.close()
+        return path
+    }
+
+    // UPDATED!
+    fun getPath(activity: Activity?, uri: Uri?): String? {
+        val projection = arrayOf(MediaStore.Video.Media.DATA)
+        val cursor: Cursor = activity!!.contentResolver.query(uri!!, projection, null, null, null)!!
+        return if (cursor != null) {
+            // HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
+            // THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
+            val column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+            cursor.moveToFirst()
+            cursor.getString(column_index)
+        } else null
+    }
+
+
 }
