@@ -19,6 +19,7 @@ package sk.stuba.fei.mv.android.zaverecne
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -71,7 +72,6 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
     recyclerView.addItemDecoration(topSpacingDecorator)
     adapter.submitList(data)
 }
-
 
 //https://medium.com/mindorks/working-with-exoplayer-the-clean-way-and-customization-fac81e5d39ba
 @BindingAdapter(value = ["video", "thumbnail"], requireAll = false)
@@ -136,17 +136,18 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
 @BindingAdapter("profile")
 fun bindProfile(view: ImageView, profileSrc: String?) {
     profileSrc?.let {
-        val imgUri = Uri.parse(profileSrc)
+        val fullPath = MasterRepository.mediaUrlBase + profileSrc
+        val imgUri = fullPath.toUri().buildUpon().scheme("http").build()
         Glide.with(view.context)
                 .load(imgUri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .apply(
                         RequestOptions()
                                 .placeholder(R.drawable.profile_picture)
-                                .circleCrop()
 //                                .error(R.drawable.ic_broken_image)
                 )
                 .into(view)
+
+        Log.d("profilePic", MasterRepository.mediaUrlBase + it)
     }
 }
 

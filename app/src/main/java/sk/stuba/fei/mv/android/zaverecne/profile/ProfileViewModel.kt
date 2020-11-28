@@ -1,13 +1,18 @@
 package sk.stuba.fei.mv.android.zaverecne.profile
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.profile_fragment.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.auth.login.LoggedInUserView
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
+import java.io.File
 
 class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewModel() {
 
@@ -19,7 +24,6 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
     private val _loggedInUserView = MutableLiveData<LoggedInUserView>()
     val loggedInUserView: LiveData<LoggedInUserView> = _loggedInUserView
 
-
     init {
 
         viewModelScope.launch {
@@ -28,7 +32,7 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
             _status.value = ApiStatus.LOADING
             if ( user != null ){
                     if(user.profilePicSrc.isEmpty()){
-                        user.profilePicSrc = "https://www.csudh.edu/Assets/csudh-sites/slp/images/faculty-staff-photos/nophoto_icon-user-default.jpg"
+                        user.profilePicSrc = "https://cdn.telanganatoday.com/wp-content/uploads/2019/09/Johnny-Sins.jpg"
                     }
                _loggedInUserView.value = LoggedInUserView(
                    displayName = user.userName,
@@ -49,6 +53,46 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
     fun logout(){
         viewModelScope.launch {
             masterRepository.dbClearUsers();
+        }
+    }
+
+    fun deleteProfilePhoto(){
+        viewModelScope.launch { // launch a new coroutine in background and continue
+                _status.value = ApiStatus.LOADING
+            try {
+                val activeUser = MasterRepository.dbExistsActiveUser()
+                activeUser?.let {
+                        MasterRepository.removeProfilePicture(activeUser.token)
+                    _status.value = ApiStatus.DONE
+                }
+            } catch (e: Exception) {
+                    _status.value = ApiStatus.ERROR
+            }
+        }
+    }
+
+
+    fun uploadProfilePhoto(view: View?, file: File?){
+        viewModelScope.launch { // launch a new coroutine in background and continue
+//                _status.value = ApiStatus.LOADING
+            try {
+                val activeUser = MasterRepository.dbExistsActiveUser()
+                activeUser?.let {
+                    if (file != null) {
+                        MasterRepository.uploadProfilePicture(activeUser.token, file)
+
+                        val snackbar = Snackbar
+                                .make(view!!, "Succesfully uploaded.", Snackbar.LENGTH_LONG)
+                        snackbar.show()
+                    }
+                }
+            } catch (e: Exception) {
+//                    _status.value = ApiStatus.ERROR
+//                    _posts.value = ArrayList()
+                val snackbar = Snackbar
+                        .make(view!!, "Error during upload the photo.", Snackbar.LENGTH_LONG)
+                snackbar.show()
+            }
         }
     }
 }

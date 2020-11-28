@@ -79,6 +79,9 @@
     <string name="change_password_fail">Entered old password is wrong, reset failed.</string>
     <string name="takePhotoProfile">Vytvoriť fotku fotoaparátom</string>
     <string name="chooseGalleryProfile">Nahrať fotku z galérie</string>
+    <string name="showProfilePic">Zobraziť fotku</string>
+    <string name="deletePost">Vymazať príspevok</string>
+    <string name="deleteProfilePhoto">Vymazať profilovú fotku</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"

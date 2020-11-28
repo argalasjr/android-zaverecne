@@ -6,18 +6,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_item.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.camera.CameraAcitivty
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.gallery.FolderRecycleView
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
 class FeedFragment : Fragment(){
@@ -37,7 +43,8 @@ class FeedFragment : Fragment(){
         binding.viewModel = feedViewModel
 
         binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener {
-
+                showMenu(it)
+//            Log.d("feed", it.postId+"\n" + it.username +"\n " + it.created+" \n" + it.profile+"\n " + it.title+"\n " + it.videoSrc);
         })
 
 
@@ -46,7 +53,6 @@ class FeedFragment : Fragment(){
             val navController = findNavController();
             navController.navigate(R.id.action_feedFragment_to_profileFragment)
         })
-
 
 
 
@@ -83,34 +89,43 @@ class FeedFragment : Fragment(){
                 else -> false
             }
         })
-//
-//        binding.speedDialProfile.addActionItem(
-//            SpeedDialActionItem.Builder(
-//                R.id.openProfile,
-//                R.drawable.ic_baseline_video_library_24
-//            ).setLabel(getString(R.string.profile))
-//                .setTheme(R.style.AppTheme_Purple)
-//                .setLabelClickable(true)
-//                .create()
-//        )
-//
-//
-//        binding.speedDialProfile.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
-//            when (speedDialActionItem.id) {
-//                R.id.openProfile -> {
-//                    val navController = findNavController();
-//                    navController.navigate(R.id.action_feedFragment_to_profileFragment)
-//                    false // true to keep the Speed Dial open
-//                }
-//                else -> false
-//            }
-//        })
-
-
-
         return binding.root
     }
 
+
+    fun showMenu(feedPost: FeedPost) {
+        val dialog = RoundedBottomSheetDialog(context!!)
+        val btnsheet = layoutInflater.inflate(R.layout.bottom_sheet_dialog_post, null)
+        dialog.setContentView(btnsheet)
+        btnsheet.setOnClickListener {
+        }
+        dialog.show()
+
+        val deletePostBtn =
+            btnsheet.findViewById<LinearLayout>(R.id.deletePostButton)
+        deletePostBtn.setOnClickListener(View.OnClickListener {
+            GlobalScope.launch { // launch a new coroutine in background and continue
+//                _status.value = ApiStatus.LOADING
+                try {
+                    val activeUser = MasterRepository.dbExistsActiveUser()
+                    activeUser?.let {
+                        MasterRepository.removePost(activeUser.token, feedPost.postId)
+                        val snackbar = Snackbar
+                            .make(
+                                feed,
+                                "The post has been deleted.",
+                                Snackbar.LENGTH_LONG
+                            )
+                        snackbar.show()
+                    }
+                } catch (e: Exception) {
+//                    _status.value = ApiStatus.ERROR
+//                    _posts.value = ArrayList()
+                }
+            }
+            dialog.dismiss()
+        })
+    }
 
     private fun captureVideo() {
         // Permission has already been granted

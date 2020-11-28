@@ -4,12 +4,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_video_preview.*
+import kotlinx.android.synthetic.main.feed_item.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.R
@@ -26,9 +29,13 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 
     override fun onBindViewHolder(holder: FeedPostViewHolder, position: Int) {
         val feedPost = getItem(position)
-        holder.itemView.setOnClickListener {
+//        holder.itemView.setOnClickListener {
+//            onClickListener.onClick(feedPost)
+//        }
+        holder.itemView.postMoreButton.setOnClickListener {
             onClickListener.onClick(feedPost)
         }
+
         holder.bind(feedPost)
     }
 
@@ -37,61 +44,22 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
             binding.post = feedPost
             binding.executePendingBindings()
 
-            binding.postMoreButton.setOnClickListener(View.OnClickListener {
-                showMenu(it,feedPost)
-            })
-
-            Log.d("Bind", "holder" + feedPost.username)
-        }
-
-        fun showMenu(view: View, feedPost: FeedPost) {
-            val popup = PopupMenu(view.context, view)
-           popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-            R.id.delete -> {
-
-                GlobalScope.launch { // launch a new coroutine in background and continue
-//                _status.value = ApiStatus.LOADING
-                    try {
-                        val activeUser = MasterRepository.dbExistsActiveUser()
-                        activeUser?.let {
-                            MasterRepository.removePost(activeUser.token,feedPost.postId)
-
-                            val snackbar = Snackbar
-                                .make(view, "The post has been deleted.", Snackbar.LENGTH_LONG)
-                            snackbar.show()
-                        }
-                    } catch (e: Exception) {
-//                    _status.value = ApiStatus.ERROR
-//                    _posts.value = ArrayList()
-                    }
-                }
-
-
-
-                true
-            } else -> false
-          }
-    }
-            popup.inflate(R.menu.post_menu)
-            popup.show()
         }
 
     }
-
-    class OnClickListener(val clickListener: (feedPost: FeedPost) -> Unit) {
-        fun onClick(feedPost: FeedPost) = clickListener(feedPost)
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<FeedPost>() {
-        override fun areItemsTheSame(oldItem: FeedPost, newItem: FeedPost): Boolean {
-            return oldItem === newItem
+        class OnClickListener(val clickListener: (feedPost: FeedPost) -> Unit) {
+            fun onClick(feedPost: FeedPost) = clickListener(feedPost)
         }
 
-        override fun areContentsTheSame(oldItem: FeedPost, newItem: FeedPost): Boolean {
-            return oldItem.postId == newItem.postId
+        companion object DiffCallback : DiffUtil.ItemCallback<FeedPost>() {
+            override fun areItemsTheSame(oldItem: FeedPost, newItem: FeedPost): Boolean {
+                return oldItem === newItem
+            }
+
+            override fun areContentsTheSame(oldItem: FeedPost, newItem: FeedPost): Boolean {
+                return oldItem.postId == newItem.postId
+            }
         }
-    }
 
 
 }

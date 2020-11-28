@@ -51,7 +51,6 @@ class CameraAcitivty : AppCompatActivity(){
         camera.flash = Flash.OFF
 
         createVideoFolder()
-
         videoOnlineImageButton.setOnClickListener(View.OnClickListener {
 
             mIsRecording = true
