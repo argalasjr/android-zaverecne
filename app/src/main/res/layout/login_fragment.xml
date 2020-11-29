@@ -53,6 +53,7 @@
 
         <Button
             android:id="@+id/login"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -71,6 +72,7 @@
 
         <Button
             android:id="@+id/btn_link_to_register"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
