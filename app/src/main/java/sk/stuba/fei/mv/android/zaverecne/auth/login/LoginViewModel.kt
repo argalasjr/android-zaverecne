@@ -55,12 +55,6 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
 
 
             if(result != null){
-                _loginResult.value =
-                    LoginResult(success = LoggedInUserView(
-                        displayName = result.username,
-                        profilePicture = result.profile,
-                        email = result.email))
-
                 masterRepository.dbClearUsers()
                 val user = User(
                     result.username,
@@ -70,6 +64,11 @@ class LoginViewModel(private val masterRepository: MasterRepository) : ViewModel
                     result.refresh
                 )
                 masterRepository.dbInsertUser(user)
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(
+                        displayName = result.username,
+                        profilePicture = result.profile,
+                        email = result.email))
 
 
 
