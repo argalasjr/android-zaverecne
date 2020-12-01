@@ -51,14 +51,16 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"
                     android:theme="@style/Theme.Design.NoActionBar"/>
-
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="video/*" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="sk.stuba.fei.mv.android.zaverecne.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

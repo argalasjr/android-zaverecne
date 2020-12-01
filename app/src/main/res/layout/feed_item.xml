@@ -2,7 +2,8 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:shimmer="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View"/>
@@ -123,22 +124,72 @@
             app:resize_mode="fit"
             app:controller_layout_id="@layout/exo_player_control_view_post"
             app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            app:show_buffering="always"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
-            app:thumbnail="@{feedPostThumbnail}"
-            app:video="@{post.videoSrc}" />
+            app:on_state_change="@{callback}"
+            app:video="@{post.videoSrc}" >
 
-            <ImageView
-                android:id="@+id/feedPostThumbnail"
+            <ProgressBar
+                android:id="@+id/progressBarBuffering"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_gravity="bottom"
                 android:visibility="gone"
-                android:scaleType="centerCrop"
-                app:thumbnail="@{post.videoSrc}" />
+                android:indeterminate="true"
+                android:layout_marginHorizontal="2dp"/>
+
+        </com.google.android.exoplayer2.ui.PlayerView>
+
+
+
+
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+    android:id="@+id/loadingPanel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    shimmer:duration="800">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/placeholder_video"
+        android:background="@color/placeholder_bg" />
+</com.facebook.shimmer.ShimmerFrameLayout>
+
+
+<!--        <RelativeLayout-->
+<!--            android:id="@+id/loadingPanel"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:layout_margin="40dp"-->
+<!--            android:gravity="center" >-->
+
+<!--            <ProgressBar-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:indeterminate="true" />-->
+<!--        </RelativeLayout>-->
+
+
+<!--            <ImageView-->
+<!--                android:id="@+id/feedPostThumbnail"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="300dp"-->
+<!--                android:adjustViewBounds="true"-->
+<!--                app:resize_mode="fill"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+<!--                android:visibility="visible"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                app:thumbnail="@{post.videoSrc}" />-->
 
 <!--    </androidx.cardview.widget.CardView>-->
 

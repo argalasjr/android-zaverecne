@@ -2,10 +2,8 @@ package sk.stuba.fei.mv.android.zaverecne.profile
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -23,15 +21,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
-
-import kotlinx.android.synthetic.main.bottom_sheet_dialog.*
-import kotlinx.android.synthetic.main.bottom_sheet_dialog.view.*
 import kotlinx.android.synthetic.main.camera_fragment.*
 import kotlinx.android.synthetic.main.profile_fragment.*
+import sk.stuba.fei.mv.android.zaverecne.BuildConfig
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getRealPathFromURI
-import sk.stuba.fei.mv.android.zaverecne.gallery.FolderRecycleView
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -107,16 +102,16 @@ class ProfileFragment : Fragment() {
                         btnsheet.findViewById<LinearLayout>(R.id.takePhotoProfile)
                 chooseTakePhotoButton.setOnClickListener(View.OnClickListener {
 
-                    if(checkPermissionCamera()){
+                    if (checkPermissionCamera()) {
                         dispatchTakePictureIntent()
-                    }else{
+                    } else {
                         requestPermissionCamera()
                     }
                     dialog.dismiss()
 
                 })
 
-                val deleteProfilePic =  btnsheet.findViewById<LinearLayout>(R.id.deletePhoto)
+                val deleteProfilePic = btnsheet.findViewById<LinearLayout>(R.id.deletePhoto)
                 deleteProfilePic.setOnClickListener(View.OnClickListener {
                     profileViewModel.deleteProfilePhoto(it)
                     dialog.dismiss()
@@ -157,10 +152,11 @@ class ProfileFragment : Fragment() {
 
                     val photoURI: Uri = FileProvider.getUriForFile(
                             context!!,
-                            "com.example.android.fileprovider",
+                            BuildConfig.APPLICATION_ID + ".fileprovider",
                             it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    takePictureIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     startActivityForResult(takePictureIntent, REQUEST_CODE_CAM)
 
                 }
@@ -179,7 +175,7 @@ class ProfileFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
 //            bindprofileImage.setImageURI(data?.data) // handle chosen image
             val path = data?.data
-            val realPath = getRealPathFromURI(activity,path)
+            val realPath = getRealPathFromURI(context!!, path!!)
             val file = File(realPath)
             Log.d("filePath", file.absolutePath);
             viewModel.uploadProfilePhoto(container, file)
@@ -229,8 +225,8 @@ class ProfileFragment : Fragment() {
 
     private fun checkPermissionStorage(): Boolean {
         val result = ContextCompat.checkSelfPermission(
-            context!!,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+                context!!,
+                Manifest.permission.READ_EXTERNAL_STORAGE
         )
         return result == PackageManager.PERMISSION_GRANTED
     }
@@ -252,17 +248,17 @@ class ProfileFragment : Fragment() {
 
     private fun requestPermission() {
         ActivityCompat.requestPermissions(
-            activity!!,
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-            PERMISSION_REQUEST_CODE
+                activity!!,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
         )
     }
 
     private fun requestPermissionCamera() {
         ActivityCompat.requestPermissions(
-            activity!!,
-            arrayOf(Manifest.permission.CAMERA),
-            PERMISSION_REQUEST_CODE_CAM
+                activity!!,
+                arrayOf(Manifest.permission.CAMERA),
+                PERMISSION_REQUEST_CODE_CAM
         )
     }
 

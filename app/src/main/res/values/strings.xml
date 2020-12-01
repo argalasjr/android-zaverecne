@@ -82,6 +82,8 @@
     <string name="showProfilePic">Zobraziť fotku</string>
     <string name="deletePost">Vymazať príspevok</string>
     <string name="deleteProfilePhoto">Vymazať profilovú fotku</string>
+    <string name="sharePost">Zdieľať</string>
+    <string name="loading">Načitávam</string>
     <plurals name="numberOfFiles">
         <!--
              As a developer, you should always supply "one" and "other"

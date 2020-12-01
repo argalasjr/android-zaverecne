@@ -21,9 +21,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.view.View
-import android.view.animation.AnimationUtils
-import android.view.animation.LayoutAnimationController
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -31,17 +30,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
+import sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback
 import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
@@ -67,6 +66,24 @@ fun bindStatus(statusImageView: ImageView, status: ApiStatus?) {
     }
 }
 
+
+@BindingAdapter("apiStatusFeed")
+fun bindStatusFeed(statusImageView: View, status: ApiStatus?) {
+    when (status) {
+        ApiStatus.LOADING -> {
+            statusImageView.visibility = View.VISIBLE
+        }
+        ApiStatus.ERROR -> {
+            statusImageView.visibility = View.VISIBLE
+            statusImageView.context.toast("An error occurred while loading posts.")
+        }
+        ApiStatus.DONE -> {
+            statusImageView.visibility = View.GONE
+        }
+    }
+}
+
+
 @BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
     val adapter = recyclerView.adapter as FeedRecyclerAdapter
@@ -76,29 +93,34 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
     adapter.submitList(data)
 }
 
+
 //https://medium.com/mindorks/working-with-exoplayer-the-clean-way-and-customization-fac81e5d39ba
-@BindingAdapter(value = ["video", "thumbnail"], requireAll = false)
-fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
+@BindingAdapter("video", "on_state_change")
+fun PlayerView.loadVideo(videoSrc: String, callback: PlayerStateCallback) {
     val repo = MasterRepository(context)
     videoSrc.let {
+
         val trackSelection = DefaultTrackSelector(context);
-        val player =   SimpleExoPlayer.Builder(context)
+        val player = SimpleExoPlayer.Builder(context)
             .setTrackSelector(trackSelection)
             .build()
         player.playWhenReady = false
-        player.repeatMode = Player.REPEAT_MODE_ALL
+        player.repeatMode = Player.REPEAT_MODE_OFF
         setKeepContentOnPlayerReset(true)
         this.controllerHideOnTouch = true
         this.controllerShowTimeoutMs = 1000
 
         val fullUrl = repo.mediaUrlBase + videoSrc
         val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
-        val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("Demo")).createMediaSource(mediaItem)
+//        val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("Demo"))
+//            .createMediaSource(mediaItem)
+        val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
+            .createMediaSource(mediaItem)
         player.setMediaSource(mediaSource)
         this.player = player
         player.prepare()
 
-        this.player!!.addListener(object: Player.EventListener {
+        this.player!!.addListener(object : Player.EventListener {
             override fun onPlayerError(error: ExoPlaybackException) {
                 super.onPlayerError(error)
                 this@loadVideo.context.toast("An error occurred while playing media.")
@@ -107,15 +129,43 @@ fun PlayerView.loadVideo(videoSrc: String, thumbnail: ImageView) {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 super.onPlayWhenReadyChanged(playWhenReady, playbackState)
 
-//                if (playbackState == Player.STATE_BUFFERING) {
-//                    thumbnail.visibility = View.VISIBLE
-//                }
-//                if (playbackState == Player.STATE_READY) {
-//                    thumbnail.visibility = View.GONE
-//                }
+                if (playbackState == Player.STATE_BUFFERING) {
+                    // Buffering.. set progress bar visible here
+                    callback.onVideoBuffering(player)
+                }
+            if (playbackState == Player.STATE_READY){
+                // [PlayerView] has fetched the video duration so this is the block to hide the buffering progress bar
+                callback.onVideoDurationRetrieved((this@loadVideo.player as SimpleExoPlayer).duration, player)
+            }
+            if (playbackState == Player.STATE_READY && player.playWhenReady){
+                // [PlayerView] has started playing/resumed the video
+                callback.onStartedPlaying(player)
+            }
+                if (playbackState == Player.STATE_ENDED){
+                    // [PlayerView] has ended playing
+                    callback.onFinishedPlaying(player)
+                }
 
             }
+
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                super.onPlayWhenReadyChanged(playWhenReady, reason)
+            }
+
+            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+                super.onPlaybackParametersChanged(playbackParameters)
+            }
+
+            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) {
+                super.onPlaybackSuppressionReasonChanged(playbackSuppressionReason)
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+            }
         })
+
+
     }
 }
 
@@ -138,19 +188,27 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
 @BindingAdapter("profile")
 fun bindProfile(view: ImageView, profileSrc: String?) {
     profileSrc?.let {
-        val fullPath = MasterRepository.mediaUrlBase + profileSrc
-        val imgUri = fullPath.toUri().buildUpon().scheme("http").build()
-        Glide.with(view.context)
-                .load(imgUri)
-                .apply(
+        val imgUri: Uri
+        //Kontrola ci uzivatel ma nastavenu profilovu fotku
+        if (profileSrc.isEmpty()) {
+            imgUri = Uri.parse("android.resource://" + view.context.packageName + "/drawable/profile_picture");
+        } else {
+            val fullPath = MasterRepository.mediaUrlBase + profileSrc
+            imgUri = fullPath.toUri().buildUpon().scheme("http").build()
+        }
+            Glide.with(view.context)
+                    .load(imgUri)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .apply(
                         RequestOptions()
-                                .placeholder(R.drawable.profile_picture)
-//                                .error(R.drawable.ic_broken_image)
-                )
-                .into(view)
+                            .placeholder(R.drawable.profile_picture)
+                            .error(R.drawable.ic_broken_image)
+                    )
+                    .into(view)
 
-        Log.d("profilePic", MasterRepository.mediaUrlBase + it)
-    }
+            Log.d("profilePic", MasterRepository.mediaUrlBase + it)
+        }
+
 }
 
 @BindingAdapter("imageUrl")
@@ -159,9 +217,11 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
         Glide.with(imgView.context)
             .load(imgUri)
-            .apply(RequestOptions()
-                .placeholder(R.drawable.loading_animation)
-                .error(R.drawable.ic_broken_image))
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.loading_animation)
+                    .error(R.drawable.ic_broken_image)
+            )
             .into(imgView)
     }
 }

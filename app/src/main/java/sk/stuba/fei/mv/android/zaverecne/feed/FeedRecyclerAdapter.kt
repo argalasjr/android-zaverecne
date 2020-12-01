@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
+import com.google.android.exoplayer2.Player
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedItemBinding
@@ -32,15 +33,40 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
             onClickListener.onClick(feedPost)
         }
         holder.bind(feedPost)
-        Log.d("feedPost", position.toString() + "\n" + feedPost.postId + "\n" + feedPost.username)
-
+//        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
+//        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
 
     }
 
-    class FeedPostViewHolder(private val binding: FeedItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class FeedPostViewHolder(private val binding: FeedItemBinding) : RecyclerView.ViewHolder(binding.root), PlayerStateCallback {
         fun bind(feedPost: FeedPost) {
             binding.post = feedPost
+            binding.loadingPanel.startShimmerAnimation()
+            binding.callback = this@FeedPostViewHolder
             binding.executePendingBindings()
+        }
+
+        override fun onVideoDurationRetrieved(duration: Long, player: Player) {
+            binding.loadingPanel.visibility = View.GONE
+            binding.progressBarBuffering.visibility = View.GONE
+            binding.feedPostVideo.visibility = View.VISIBLE
+            binding.loadingPanel.stopShimmerAnimation()
+            Log.d("holder", "on video duration retrieved - callback")
+        }
+
+        override fun onVideoBuffering(player: Player) {
+            Log.d("holder", "on video buffering - callback")
+            binding.progressBarBuffering.visibility = View.VISIBLE
+        }
+
+        override fun onStartedPlaying(player: Player) {
+            Log.d("holder", "on started playing - callback")
+        }
+
+        override fun onFinishedPlaying(player: Player) {
+            Log.d("holder", "on finished playing - callback")
+            player.seekTo(0)
+            player.playWhenReady = false
         }
 
     }

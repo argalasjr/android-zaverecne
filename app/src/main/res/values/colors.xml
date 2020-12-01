@@ -8,6 +8,7 @@
     <color name="transparent">#73040000</color>
     <color name="invisible">#00000000</color>
 
+    <color name="placeholder_bg">#dddddd</color>
     <!--Color palette-->
 
     <color name="purple_200">#bb86fc</color> <!--Color primary (dark)-->

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import sk.stuba.fei.mv.android.zaverecne.beans.Album
 import sk.stuba.fei.mv.android.zaverecne.beans.RowItem
@@ -31,7 +32,7 @@ object FetchFiles {
                 val item = songNames[i]?.let { descriptions[i]?.let { it1 ->
                     dateCreated[i]?.let { it2 ->
                         RowItem(it,
-                            it1, songs[i], it2
+                                it1, songs[i], it2
                         )
                     }
                 } }
@@ -109,8 +110,8 @@ object FetchFiles {
         return if (hr == 0) {
             String.format("%02d", mn) + ':' + String.format("%02d", sec)
         } else String.format("%02d", hr) + ':' + String.format(
-            "%02d",
-            mn
+                "%02d",
+                mn
         ) + ':' + String.format("%02d", sec)
     }
 
@@ -140,32 +141,21 @@ object FetchFiles {
         return Date(files[position].lastModified())
     }
 
-    fun getRealPathFromURI(activity: Activity?, contentUri: Uri?): String? {
-        var cursor: Cursor = activity!!.contentResolver.query(contentUri!!, null, null, null, null)!!
-        cursor.moveToFirst()
-        var document_id = cursor.getString(0)
-        document_id = document_id.substring(document_id.lastIndexOf(":") + 1)
-        cursor.close()
-        cursor = activity!!.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", arrayOf(document_id), null)!!
-        cursor.moveToFirst()
-        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-        cursor.close()
-        return path
-    }
 
-    // UPDATED!
-    fun getPath(activity: Activity?, uri: Uri?): String? {
-        val projection = arrayOf(MediaStore.Video.Media.DATA)
-        val cursor: Cursor = activity!!.contentResolver.query(uri!!, projection, null, null, null)!!
-        return if (cursor != null) {
-            // HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
-            // THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
-            val column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+    fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
+        val result: String?
+        val cursor: Cursor? = context.contentResolver.query(
+            contentURI, null, null, null, null
+        )
+        if (cursor == null) {
+            result = contentURI.path
+        } else {
             cursor.moveToFirst()
-            cursor.getString(column_index)
-        } else null
+            val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
     }
-
 
 }
