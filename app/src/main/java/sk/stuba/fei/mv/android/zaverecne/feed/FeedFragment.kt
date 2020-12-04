@@ -49,16 +49,8 @@ class FeedFragment : Fragment() {
 
         binding.viewModel = feedViewModel
 
-        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener {feedPost, view ->
-            Log.d("click", "click listener")
-            when(view){
-               binding.feed.postMoreButton -> showMenu(feedViewModel, feedPost)
-               else -> {
-                   Log.d("click", "click listener else")
-               }
-           }
-
-//            Log.d("feed", it.postId+"\n" + it.username +"\n " + it.created+" \n" + it.profile+"\n " + it.title+"\n " + it.videoSrc);
+        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener{
+            showMenu(feedViewModel, it)
         })
 
         //automaticky prehra aktualne video na obrazovke pri scrollovani

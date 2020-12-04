@@ -40,13 +40,12 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 //            onClickListener.onClick(feedPost)
 //        }
         holder.itemView.postMoreButton.setOnClickListener {
-            onClickListener.onClick(feedPost,it)
+            onClickListener.onClick(feedPost)
         }
 
         holder.bind(feedPost)
-        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
-        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
-
+//        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
+//        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
     }
 
     class FeedScrollListener : RecyclerView.OnScrollListener() {
@@ -96,8 +95,8 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 
     }
 
-    class OnClickListener(val clickListener: (feedPost: FeedPost, view: View) -> Unit) {
-        fun onClick(feedPost: FeedPost, view: View) = clickListener(feedPost,view)
+    class OnClickListener(val clickListener: (feedPost: FeedPost) -> Unit) {
+        fun onClick(feedPost: FeedPost) = clickListener(feedPost)
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<FeedPost>() {
