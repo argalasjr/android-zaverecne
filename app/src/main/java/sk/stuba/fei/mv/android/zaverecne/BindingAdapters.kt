@@ -177,8 +177,8 @@ class FeedPlayerAdapter {
 
         @JvmStatic
         fun pauseNowPlaying() {
-            if (nowPlaying != null) {
-                nowPlaying?.second?.playWhenReady = false
+            nowPlaying?.let {
+                it.second.playWhenReady = false
             }
         }
 
