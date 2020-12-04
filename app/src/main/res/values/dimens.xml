@@ -9,5 +9,6 @@
     <dimen name="card_margin_horizontal">-3dp</dimen>
     <dimen name="list_item_spacing">16dp</dimen>
     <dimen name="list_item_spacing_half">8dp</dimen>
-    <dimen name="placeholder_video">220dp</dimen>
+    <dimen name="placeholder_video">300dp</dimen>
+    <dimen name="profile_image_main">120dp</dimen>
 </resources>

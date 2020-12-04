@@ -36,6 +36,7 @@ class VideoViewModel(private val masterRepository: MasterRepository) : ViewModel
             viewModelScope.launch { // launch a new coroutine in background and continue
                 _status.value = ApiStatus.LOADING
                 try {
+                    Log.d("upload", "upload - $videoPath")
                     val activeUser = masterRepository.dbExistsActiveUser()
                     activeUser?.let {
                         masterRepository.uploadPost(activeUser.token, File(videoPath))

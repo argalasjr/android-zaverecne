@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -68,6 +69,15 @@ class FeedFragment : Fragment() {
             navController.navigate(R.id.action_feedFragment_to_profileFragment)
         })
 
+        //** Set the colors of the Pull To Refresh View
+        binding.swiperefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(context!!, R.color.material_green_900))
+        binding.swiperefresh.setColorSchemeColors(Color.WHITE)
+
+        binding.swiperefresh.setOnRefreshListener {
+                releaseAllPlayers()
+                feedViewModel.getUserPosts()
+                binding.swiperefresh.isRefreshing = false
+        }
 
         binding.speedDial.addActionItem(
             SpeedDialActionItem.Builder(

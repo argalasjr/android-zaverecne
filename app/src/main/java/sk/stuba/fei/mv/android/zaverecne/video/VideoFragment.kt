@@ -1,25 +1,22 @@
 package sk.stuba.fei.mv.android.zaverecne.video
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.camera_fragment.*
-
 import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.android.synthetic.main.video_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.VideoFragmentBinding
-
 
 
 class VideoFragment : Fragment() {
@@ -27,8 +24,10 @@ class VideoFragment : Fragment() {
     private lateinit var viewModel: VideoViewModel
     private var path : String = ""
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         val binding = VideoFragmentBinding.inflate(inflater)
 
@@ -46,7 +45,7 @@ class VideoFragment : Fragment() {
 
         })
         binding.exoplayerView.exo_save.setOnClickListener(View.OnClickListener {
-            uploadVideo(it)
+            uploadVideo()
             binding.exoplayerView.exo_save.isEnabled = false
         })
 
@@ -59,8 +58,9 @@ class VideoFragment : Fragment() {
         navController.navigate(R.id.action_videoFragment_to_feedFragment)
     }
 
-    private fun uploadVideo(view: View?){
-        viewModel.uploadVideo(view, path)
+    private fun uploadVideo(){
+        val parentLayout: View = View.inflate(context, R.layout.feed_fragment, null)
+        viewModel.uploadVideo(parentLayout, path)
         val navController = findNavController();
         navController.navigate(R.id.action_videoFragment_to_feedFragment)
     }
