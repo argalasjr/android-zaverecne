@@ -22,6 +22,10 @@ import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import kotlinx.android.synthetic.main.feed_fragment.*
+import kotlinx.android.synthetic.main.feed_item.*
+import kotlinx.android.synthetic.main.feed_item.view.*
+import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter
+import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.onVolumeChange
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.releaseAllPlayers
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
@@ -45,8 +49,15 @@ class FeedFragment : Fragment() {
 
         binding.viewModel = feedViewModel
 
-        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener {
-            showMenu(feedViewModel, it)
+        binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener {feedPost, view ->
+            Log.d("click", "click listener")
+            when(view){
+               binding.feed.postMoreButton -> showMenu(feedViewModel, feedPost)
+               else -> {
+                   Log.d("click", "click listener else")
+               }
+           }
+
 //            Log.d("feed", it.postId+"\n" + it.username +"\n " + it.created+" \n" + it.profile+"\n " + it.title+"\n " + it.videoSrc);
         })
 
@@ -64,7 +75,6 @@ class FeedFragment : Fragment() {
             val navController = findNavController();
             navController.navigate(R.id.action_feedFragment_to_profileFragment)
         })
-
 
 
         binding.speedDial.addActionItem(

@@ -13,14 +13,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.LoginFragmentBinding
+import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import sk.stuba.fei.mv.android.zaverecne.util.Utils
 
@@ -31,11 +30,16 @@ class LoginFragment : Fragment() {
         ViewModelProvider(this).get(LoginViewModel::class.java)
     }
 
+    private var _binding: LoginFragmentBinding? = null
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = LoginFragmentBinding.inflate(inflater)
+        _binding = LoginFragmentBinding.inflate(inflater)
 
 
         val application = requireNotNull(this.activity).application
@@ -49,12 +53,9 @@ class LoginFragment : Fragment() {
             ViewModelProvider(
                 this, viewModelFactory).get(LoginViewModel::class.java)
 
-
-
         // Specify the current activity as the lifecycle owner of the binding.
         // This is necessary so that the binding can observe LiveData updates.
-        binding.setLifecycleOwner(this)
-
+        binding.lifecycleOwner = this
 
         binding.loginViewModel = viewModel
 
@@ -138,10 +139,17 @@ class LoginFragment : Fragment() {
 
         }
 
-
-
-
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("leak", "onDestroyView called")
+        _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {

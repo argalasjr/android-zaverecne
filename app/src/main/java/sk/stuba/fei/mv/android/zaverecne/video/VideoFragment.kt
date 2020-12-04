@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import kotlinx.android.synthetic.main.camera_fragment.*
 
 import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.android.synthetic.main.video_fragment.*
@@ -77,6 +78,11 @@ class VideoFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         startExoPlayer()
+    }
+
+    override fun onDestroyView() {
+        videoLayout.removeAllViews()
+        super.onDestroyView()
     }
 
     private fun stopExoPlayer() {

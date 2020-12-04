@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.loadVideo
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.onViewRecycled
+import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedItemBinding
 import sk.stuba.fei.mv.android.zaverecne.toast
 
@@ -39,11 +40,12 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 //            onClickListener.onClick(feedPost)
 //        }
         holder.itemView.postMoreButton.setOnClickListener {
-            onClickListener.onClick(feedPost)
+            onClickListener.onClick(feedPost,it)
         }
+
         holder.bind(feedPost)
-//        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
-//        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
+        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
+        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
 
     }
 
@@ -62,17 +64,18 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
         RecyclerView.ViewHolder(binding.root), PlayerStateCallback {
         fun bind(feedPost: FeedPost) {
             binding.post = feedPost
-            binding.loadingPanel.startShimmerAnimation()
+            binding.loadingPanel.startShimmer()
             binding.callback = this@FeedPostViewHolder
             binding.itemId = adapterPosition
             binding.executePendingBindings()
+            binding.volumeState = FeedPlayerAdapter.getVolume() != 0f
         }
 
         override fun onVideoDurationRetrieved(duration: Long, player: Player) {
             binding.loadingPanel.visibility = View.GONE
             binding.progressBarBuffering.visibility = View.GONE
             binding.feedPostVideo.visibility = View.VISIBLE
-            binding.loadingPanel.stopShimmerAnimation()
+            binding.loadingPanel.stopShimmer()
             Log.d("holder", "on video duration retrieved - callback")
         }
 
@@ -93,8 +96,8 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 
     }
 
-    class OnClickListener(val clickListener: (feedPost: FeedPost) -> Unit) {
-        fun onClick(feedPost: FeedPost) = clickListener(feedPost)
+    class OnClickListener(val clickListener: (feedPost: FeedPost, view: View) -> Unit) {
+        fun onClick(feedPost: FeedPost, view: View) = clickListener(feedPost,view)
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<FeedPost>() {

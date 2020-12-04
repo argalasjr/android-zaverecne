@@ -59,10 +59,13 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
                 val activeUser = MasterRepository.dbExistsActiveUser()
                 activeUser?.let {
                         MasterRepository.removeProfilePicture(activeUser.token)
+
+                    _loggedInUserView.value = masterRepository.fetchUserProfile(activeUser.token)
                     val snackbar = Snackbar
                         .make(view!!, "The profile photo has been deleted.", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     _status.value = ApiStatus.DONE
+
                 }
             } catch (e: Exception) {
                     _status.value = ApiStatus.ERROR
@@ -83,6 +86,7 @@ class ProfileViewModel(private val masterRepository: MasterRepository)  : ViewMo
                                 .make(view!!, "Succesfully uploaded.", Snackbar.LENGTH_LONG)
                         snackbar.show()
                         _status.value = ApiStatus.DONE
+                        _loggedInUserView.value = masterRepository.fetchUserProfile(activeUser.token)
                     }
                 }
             } catch (e: Exception) {

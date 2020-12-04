@@ -16,77 +16,75 @@
         <variable
             name="item_id"
             type="int"/>
+        <variable
+            name="volumeState"
+            type="boolean"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:background="@color/white"
-        android:layout_marginTop="5dp"
-        >
+        android:elevation="10dp">
 
         <RelativeLayout
+            android:id="@+id/postInfoLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            app:layout_constraintTop_toTopOf="parent"
             android:orientation="vertical"
             android:padding="10dp"
-            android:id="@+id/postInfoLabel"
-            >
+            android:textAlignment="textStart"
+            app:layout_constraintTop_toTopOf="parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/postProfilePic"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/circle"
                 android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="2dp"
+                android:background="@drawable/circle"
                 app:civ_border_color="@color/material_gray_400"
                 app:civ_border_width="1dp"
-                android:layout_margin="2dp"
-                app:profile="@{post.profile}"
-                />
+                app:profile="@{post.profile}" />
 
             <!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/postTitle"-->
-<!--                android:text="@{post.title}"-->
-<!--                android:textColor="#000"-->
-<!--                android:textSize="19sp"-->
-<!--                />-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:id="@+id/postTitle"-->
+            <!--                android:text="@{post.title}"-->
+            <!--                android:textColor="#000"-->
+            <!--                android:textSize="19sp"-->
+            <!--                />-->
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:orientation="vertical"
                 android:layout_toEndOf="@id/postProfilePic"
-                >
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/postUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_gravity="top"
-                android:text="@{post.username}"
-                android:textColor="@color/material_gray_900"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/postUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_marginStart="2dp"
+                    android:text="@{post.username}"
+                    android:textColor="@color/material_gray_900"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/postCreated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_gravity="bottom"
-                android:text="@{post.created}"
-                android:textColor="@color/material_gray_700"
-                android:textSize="12sp"
-                />
+                <TextView
+                    android:id="@+id/postCreated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="2dp"
+                    android:text="@{post.created}"
+                    android:textColor="@color/material_gray_700"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -112,22 +110,22 @@
 
         </RelativeLayout>
 
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
-<!--        android:background="@color/material_gray_700">-->
+        <!--    <androidx.cardview.widget.CardView-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+        <!--        android:background="@color/material_gray_700">-->
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/feedPostVideo"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:maxHeight="330dp"
+            android:layout_height="@dimen/placeholder_video"
+            android:maxHeight="@dimen/placeholder_video"
             android:padding="3dp"
             app:resize_mode="fit"
             app:controller_layout_id="@layout/exo_player_control_view_post"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="gone"
+            android:visibility="visible"
             app:show_buffering="always"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
@@ -145,6 +143,19 @@
                 android:indeterminate="true"
                 android:layout_marginHorizontal="2dp"/>
 
+            <ImageView
+                android:id="@+id/volumeView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@color/material_gray_800"
+                android:elevation="10dp"
+                app:onClick="@{volumeState}"
+                />
+
+
         </com.google.android.exoplayer2.ui.PlayerView>
 
 
@@ -152,50 +163,51 @@
 
 
         <com.facebook.shimmer.ShimmerFrameLayout
-    android:id="@+id/loadingPanel"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
-    android:layout_gravity="center"
-    android:orientation="vertical"
-    shimmer:duration="800">
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/placeholder_video"
-        android:background="@color/placeholder_bg" />
-</com.facebook.shimmer.ShimmerFrameLayout>
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
+            shimmer:duration="800">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/placeholder_video"
+                android:background="@color/placeholder_bg" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
 
-<!--        <RelativeLayout-->
-<!--            android:id="@+id/loadingPanel"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            android:layout_margin="40dp"-->
-<!--            android:gravity="center" >-->
+        <!--        <RelativeLayout-->
+        <!--            android:id="@+id/loadingPanel"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            android:layout_margin="40dp"-->
+        <!--            android:gravity="center" >-->
 
-<!--            <ProgressBar-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:indeterminate="true" />-->
-<!--        </RelativeLayout>-->
+        <!--            <ProgressBar-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:indeterminate="true" />-->
+        <!--        </RelativeLayout>-->
 
 
-<!--            <ImageView-->
-<!--                android:id="@+id/feedPostThumbnail"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:adjustViewBounds="true"-->
-<!--                app:resize_mode="fill"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
-<!--                android:visibility="visible"-->
-<!--                android:scaleType="centerCrop"-->
-<!--                app:thumbnail="@{post.videoSrc}" />-->
+        <!--            <ImageView-->
+        <!--                android:id="@+id/feedPostThumbnail"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="300dp"-->
+        <!--                android:adjustViewBounds="true"-->
+        <!--                app:resize_mode="fill"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintTop_toBottomOf="@id/postInfoLabel"-->
+        <!--                android:visibility="visible"-->
+        <!--                android:scaleType="centerCrop"-->
+        <!--                app:thumbnail="@{post.videoSrc}" />-->
 
-<!--    </androidx.cardview.widget.CardView>-->
+        <!--    </androidx.cardview.widget.CardView>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

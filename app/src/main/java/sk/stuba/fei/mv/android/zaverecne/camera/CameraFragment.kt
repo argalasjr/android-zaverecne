@@ -28,6 +28,7 @@ import com.otaliastudios.cameraview.controls.Mode
 import com.otaliastudios.cameraview.controls.VideoCodec
 import com.otaliastudios.cameraview.size.Size
 import kotlinx.android.synthetic.main.camera_fragment.*
+import kotlinx.android.synthetic.main.profile_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.anim.Animations.animateViewFadeIn
 import sk.stuba.fei.mv.android.zaverecne.anim.Animations.animateViewFadeOut
@@ -162,6 +163,11 @@ class CameraFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        cameraLayout.removeAllViews()
+        super.onDestroyView()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

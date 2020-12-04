@@ -18,11 +18,12 @@
 package sk.stuba.fei.mv.android.zaverecne
 
 import android.content.Context
+import android.media.AudioManager
+import android.media.Image
 import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -31,13 +32,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import kotlinx.android.synthetic.main.feed_item.view.*
+import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.getVolume
+import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.onVolumeChange
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedPost
 import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
 import sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback
@@ -152,6 +153,27 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
     }
 }
 
+@BindingAdapter("onClick")
+fun setOnClick(imageView: ImageView, volume: Boolean) {
+    if(volume){
+        imageView.setBackgroundResource(R.drawable.ic_baseline_volume_up_24)
+    }else{
+        imageView.setBackgroundResource(R.drawable.ic_baseline_volume_off_24)
+    }
+
+    imageView.setOnClickListener {
+        val curr_volume = getVolume() != 0f
+        if(curr_volume){
+            it.setBackgroundResource(R.drawable.ic_baseline_volume_off_24)
+            onVolumeChange(!curr_volume)
+
+        }else{
+            it.setBackgroundResource(R.drawable.ic_baseline_volume_up_24)
+            onVolumeChange(!curr_volume)
+        }
+    }
+}
+
 /*
     Pouzite zdroje k implementacii RecyclerView + ExoPlayer:
 
@@ -214,7 +236,13 @@ class FeedPlayerAdapter {
                         exoPlayers.remove(id)
                     exoPlayers[id] = player
                 }
-                player.addListener(FeedRecyclerAdapter.FeedPlayerListener(player, context, callback))
+                player.addListener(
+                    FeedRecyclerAdapter.FeedPlayerListener(
+                        player,
+                        context,
+                        callback
+                    )
+                )
                 this.player = player
             }
         }
@@ -227,6 +255,20 @@ class FeedPlayerAdapter {
         }
 
         @JvmStatic
+        fun onVolumeChange(volume: Boolean){
+//            val currentVolume: Float
+            if(!volume){
+                exoPlayers.forEach {
+                    it.value.volume = 0f
+                }
+            }else{
+                exoPlayers.forEach {
+                    it.value.volume = AudioManager.STREAM_MUSIC.toFloat()
+                }
+            }
+        }
+
+        @JvmStatic
         fun releaseAllPlayers() {
             //for proper garbage collection
             exoPlayers.forEach {
@@ -234,5 +276,12 @@ class FeedPlayerAdapter {
             }
             exoPlayers.clear()
         }
+
+        @JvmStatic
+        fun getVolume(): Float {
+            //for proper garbage collection
+            return exoPlayers[0]!!.volume
+        }
+
     }
 }

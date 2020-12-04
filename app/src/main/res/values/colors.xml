@@ -11,6 +11,8 @@
     <color name="placeholder_bg">#dddddd</color>
     <!--Color palette-->
 
+    <color name="black_overlay">#33000000</color>
+    
     <color name="purple_200">#bb86fc</color> <!--Color primary (dark)-->
     <color name="purple_400">#7F26FF</color> <!--Color primary (dark)-->
     <color name="purple_500">#6200ee</color> <!--Color primary (light)-->

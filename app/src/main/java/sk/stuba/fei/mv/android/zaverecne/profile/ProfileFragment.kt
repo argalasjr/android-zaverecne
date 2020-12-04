@@ -22,11 +22,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import kotlinx.android.synthetic.main.camera_fragment.*
+import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.profile_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.BuildConfig
 import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getRealPathFromURI
+import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -40,6 +43,10 @@ class ProfileFragment : Fragment() {
     private val viewModel: ProfileViewModel by lazy {
         ViewModelProvider(this).get(ProfileViewModel::class.java)
     }
+    private var _binding: ProfileFragmentBinding? = null
+    // This property is only valid between onCreateView and
+// onDestroyView.
+    private val binding get() = _binding!!
 
     val REQUEST_CODE = 100
     lateinit var currentPhotoPath: String
@@ -49,7 +56,7 @@ class ProfileFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val binding = ProfileFragmentBinding.inflate(inflater)
+        _binding = ProfileFragmentBinding.inflate(inflater)
 
 
         val application = requireNotNull(this.activity).application
@@ -70,6 +77,7 @@ class ProfileFragment : Fragment() {
         // This is necessary so that the binding can observe LiveData updates.
         binding.setLifecycleOwner(this)
 
+        binding.profileViewModel = profileViewModel
 
         binding.profileViewModel = viewModel
 
@@ -134,6 +142,12 @@ class ProfileFragment : Fragment() {
         return binding.root
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("leak", "onDestroy called")
+        _binding = null
     }
 
     private fun dispatchTakePictureIntent() {

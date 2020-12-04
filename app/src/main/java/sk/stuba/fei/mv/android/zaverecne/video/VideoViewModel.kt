@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.R
+import sk.stuba.fei.mv.android.zaverecne.feed.FeedViewModel
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getFileSize
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.File
