@@ -13,6 +13,9 @@
         <variable
             name="callback"
             type="sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback"/>
+        <variable
+            name="item_id"
+            type="int"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -128,6 +131,7 @@
             app:show_buffering="always"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/postInfoLabel"
+            app:item_id="@{item_id}"
             app:on_state_change="@{callback}"
             app:video="@{post.videoSrc}" >
 

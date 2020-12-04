@@ -94,81 +94,6 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<FeedPost>?) {
 }
 
 
-//https://medium.com/mindorks/working-with-exoplayer-the-clean-way-and-customization-fac81e5d39ba
-@BindingAdapter("video", "on_state_change")
-fun PlayerView.loadVideo(videoSrc: String, callback: PlayerStateCallback) {
-    val repo = MasterRepository(context)
-    videoSrc.let {
-
-        val trackSelection = DefaultTrackSelector(context);
-        val player = SimpleExoPlayer.Builder(context)
-            .setTrackSelector(trackSelection)
-            .build()
-        player.playWhenReady = false
-        player.repeatMode = Player.REPEAT_MODE_OFF
-        setKeepContentOnPlayerReset(true)
-        this.controllerHideOnTouch = true
-        this.controllerShowTimeoutMs = 1000
-
-        val fullUrl = repo.mediaUrlBase + videoSrc
-        val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
-//        val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("Demo"))
-//            .createMediaSource(mediaItem)
-        val mediaSource = ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
-            .createMediaSource(mediaItem)
-        player.setMediaSource(mediaSource)
-        this.player = player
-        player.prepare()
-
-        this.player!!.addListener(object : Player.EventListener {
-            override fun onPlayerError(error: ExoPlaybackException) {
-                super.onPlayerError(error)
-                this@loadVideo.context.toast("An error occurred while playing media.")
-            }
-
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                super.onPlayWhenReadyChanged(playWhenReady, playbackState)
-
-                if (playbackState == Player.STATE_BUFFERING) {
-                    // Buffering.. set progress bar visible here
-                    callback.onVideoBuffering(player)
-                }
-            if (playbackState == Player.STATE_READY){
-                // [PlayerView] has fetched the video duration so this is the block to hide the buffering progress bar
-                callback.onVideoDurationRetrieved((this@loadVideo.player as SimpleExoPlayer).duration, player)
-            }
-            if (playbackState == Player.STATE_READY && player.playWhenReady){
-                // [PlayerView] has started playing/resumed the video
-                callback.onStartedPlaying(player)
-            }
-                if (playbackState == Player.STATE_ENDED){
-                    // [PlayerView] has ended playing
-                    callback.onFinishedPlaying(player)
-                }
-
-            }
-
-            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                super.onPlayWhenReadyChanged(playWhenReady, reason)
-            }
-
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-                super.onPlaybackParametersChanged(playbackParameters)
-            }
-
-            override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) {
-                super.onPlaybackSuppressionReasonChanged(playbackSuppressionReason)
-            }
-
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                super.onIsPlayingChanged(isPlaying)
-            }
-        })
-
-
-    }
-}
-
 @BindingAdapter("thumbnail")
 fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
     thumbnailSrc?.let {
@@ -191,23 +116,24 @@ fun bindProfile(view: ImageView, profileSrc: String?) {
         val imgUri: Uri
         //Kontrola ci uzivatel ma nastavenu profilovu fotku
         if (profileSrc.isEmpty()) {
-            imgUri = Uri.parse("android.resource://" + view.context.packageName + "/drawable/profile_picture");
+            imgUri =
+                Uri.parse("android.resource://" + view.context.packageName + "/drawable/profile_picture");
         } else {
             val fullPath = MasterRepository.mediaUrlBase + profileSrc
             imgUri = fullPath.toUri().buildUpon().scheme("http").build()
         }
-            Glide.with(view.context)
-                    .load(imgUri)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .apply(
-                        RequestOptions()
-                            .placeholder(R.drawable.profile_picture)
-                            .error(R.drawable.ic_broken_image)
-                    )
-                    .into(view)
+        Glide.with(view.context)
+            .load(imgUri)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.profile_picture)
+                    .error(R.drawable.ic_broken_image)
+            )
+            .into(view)
 
-            Log.d("profilePic", MasterRepository.mediaUrlBase + it)
-        }
+        Log.d("profilePic", MasterRepository.mediaUrlBase + it)
+    }
 
 }
 
@@ -223,5 +149,90 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
                     .error(R.drawable.ic_broken_image)
             )
             .into(imgView)
+    }
+}
+
+/*
+    Pouzite zdroje k implementacii RecyclerView + ExoPlayer:
+
+    https://medium.com/mindorks/working-with-exoplayer-the-clean-way-and-customization-fac81e5d39ba
+    https://medium.com/@stlin813/how-to-implementing-video-playback-in-recyclerview-viewpager-part-1-4fcdccec4a4c
+    https://medium.com/@stlin813/how-to-implementing-video-playback-in-recyclerview-viewpager-part-2-8df1b8d0d8fa
+*/
+class FeedPlayerAdapter {
+    companion object {
+        private var nowPlaying: Pair<Int, SimpleExoPlayer>? = null
+        private var exoPlayers: MutableMap<Int, SimpleExoPlayer> = mutableMapOf()
+
+        @JvmStatic
+        fun autoPlayVisible(id: Int) {
+            exoPlayers[id]?.let { player ->
+                if (!player.playWhenReady) {
+                    pauseNowPlaying()
+                    player.playWhenReady = true
+                    nowPlaying = Pair(id, player)
+                }
+            }
+        }
+
+        @JvmStatic
+        fun pauseNowPlaying() {
+            if (nowPlaying != null) {
+                nowPlaying?.second?.playWhenReady = false
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter("video", "on_state_change", "item_id")
+        fun PlayerView.loadVideo(
+            videoSrc: String,
+            callback: PlayerStateCallback,
+            item_id: Int? = null
+        ) {
+            val repo = MasterRepository(context)
+            videoSrc.let {
+                val trackSelection = DefaultTrackSelector(context);
+                val player = SimpleExoPlayer.Builder(context)
+                    .setTrackSelector(trackSelection)
+                    .build()
+                player.playWhenReady = false
+                player.repeatMode = Player.REPEAT_MODE_OFF
+                setKeepContentOnPlayerReset(true)
+                this.controllerHideOnTouch = true
+                this.controllerShowTimeoutMs = 1000
+
+                val fullUrl = repo.mediaUrlBase + videoSrc
+                val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
+                val mediaSource =
+                    ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
+                        .createMediaSource(mediaItem)
+                player.setMediaSource(mediaSource)
+                player.prepare()
+
+                item_id?.let { id ->
+                    if(exoPlayers.containsKey(id))
+                        exoPlayers.remove(id)
+                    exoPlayers[id] = player
+                }
+                player.addListener(FeedRecyclerAdapter.FeedPlayerListener(player, context, callback))
+                this.player = player
+            }
+        }
+
+        @JvmStatic
+        fun onViewRecycled(id: Int) {
+            exoPlayers[id]?.let {
+                it.release()
+            }
+        }
+
+        @JvmStatic
+        fun releaseAllPlayers() {
+            //for proper garbage collection
+            exoPlayers.forEach {
+                it.value.release()
+            }
+            exoPlayers.clear()
+        }
     }
 }

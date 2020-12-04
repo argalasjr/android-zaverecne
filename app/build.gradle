@@ -15,7 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -49,9 +49,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+//    testImplementation 'junit:junit:4.12'
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 
     // Room and Lifecycle dependencies
@@ -94,10 +94,10 @@ dependencies {
 
     // Camera
     implementation 'com.otaliastudios:cameraview:2.6.2'
-
-    implementation 'junit:junit:4.12'
-    implementation 'androidx.test:runner:1.3.0'
-    implementation 'androidx.test.espresso:espresso-core:3.3.0'
+//
+//    implementation 'junit:junit:4.12'
+//    implementation 'androidx.test:runner:1.3.0'
+//    implementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     //Image Circle View
     implementation 'de.hdodenhof:circleimageview:3.1.0'
@@ -112,4 +112,7 @@ dependencies {
 
     // Shimmer
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
+    //LeakCanary
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }

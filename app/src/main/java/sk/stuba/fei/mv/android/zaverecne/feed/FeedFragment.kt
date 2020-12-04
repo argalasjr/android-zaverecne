@@ -2,7 +2,6 @@ package sk.stuba.fei.mv.android.zaverecne.feed
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,22 +22,20 @@ import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
 import kotlinx.android.synthetic.main.feed_fragment.*
-import kotlinx.android.synthetic.main.profile_fragment.*
-import kotlinx.android.synthetic.main.video_fragment.*
-import sk.stuba.fei.mv.android.zaverecne.MainActivity
+import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.releaseAllPlayers
 import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getRealPathFromURI
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 
 
-class FeedFragment : Fragment(){
+class FeedFragment : Fragment() {
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        val binding =  FeedFragmentBinding.inflate(inflater)
+        val binding = FeedFragmentBinding.inflate(inflater)
 
         val application = requireNotNull(this.activity).application
         val viewModelFactory = FeedViewModelFactory(application)
@@ -52,6 +49,9 @@ class FeedFragment : Fragment(){
             showMenu(feedViewModel, it)
 //            Log.d("feed", it.postId+"\n" + it.username +"\n " + it.created+" \n" + it.profile+"\n " + it.title+"\n " + it.videoSrc);
         })
+
+        //automaticky prehra aktualne video na obrazovke pri scrollovani
+        binding.feed.addOnScrollListener(FeedRecyclerAdapter.FeedScrollListener())
 
         val anim = AnimationUtils.loadAnimation(context, R.anim.right_to_left)
         val layoutAnimationController = LayoutAnimationController(anim)
@@ -68,23 +68,23 @@ class FeedFragment : Fragment(){
 
 
         binding.speedDial.addActionItem(
-                SpeedDialActionItem.Builder(
-                        R.id.recordVideo,
-                        R.drawable.ic_baseline_videocam_24
-                ).setLabel(getString(R.string.record_video))
-                        .setTheme(R.style.AppTheme_Purple)
-                        .setLabelClickable(true)
-                        .create()
+            SpeedDialActionItem.Builder(
+                R.id.recordVideo,
+                R.drawable.ic_baseline_videocam_24
+            ).setLabel(getString(R.string.record_video))
+                .setTheme(R.style.AppTheme_Purple)
+                .setLabelClickable(true)
+                .create()
         )
 
         binding.speedDial.addActionItem(
-                SpeedDialActionItem.Builder(
-                        R.id.openVideo,
-                        R.drawable.ic_baseline_video_library_24
-                ).setLabel(getString(R.string.select_from_gallery))
-                        .setTheme(R.style.AppTheme_Purple)
-                        .setLabelClickable(true)
-                        .create()
+            SpeedDialActionItem.Builder(
+                R.id.openVideo,
+                R.drawable.ic_baseline_video_library_24
+            ).setLabel(getString(R.string.select_from_gallery))
+                .setTheme(R.style.AppTheme_Purple)
+                .setLabelClickable(true)
+                .create()
         )
 
         binding.speedDial.setOnActionSelectedListener(OnActionSelectedListener { speedDialActionItem ->
@@ -120,7 +120,7 @@ class FeedFragment : Fragment(){
         })
 
         val sharePostBtn =
-                btnsheet.findViewById<LinearLayout>(R.id.shareButtonPost)
+            btnsheet.findViewById<LinearLayout>(R.id.shareButtonPost)
         sharePostBtn.setOnClickListener(View.OnClickListener {
             val url = MasterRepository.mediaUrlBase + feedPost.videoSrc
             shareVideo(url)
@@ -132,17 +132,22 @@ class FeedFragment : Fragment(){
         val alert: AlertDialog.Builder = AlertDialog.Builder(context!!)
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
-        val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
         lp.setMargins(50, 0, 100, 0)
         alert.setMessage("Tento príspevok bude odstránený a už ho nebudete môcť nájsť..")
         alert.setView(linearLayout)
 
-        alert.setNegativeButton("Zrušiť", DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+        alert.setNegativeButton(
+            "Zrušiť",
+            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
         alert.setPositiveButton("Odstrániť", DialogInterface.OnClickListener { dialog, which ->
-                    feedViewModel.deleteUserPost(feed, feedPost)
-                    Toast.makeText(context, "The post has been deleted.", Toast.LENGTH_LONG).show()
-                    dialog.dismiss()
-                    feedViewModel.getUserPosts()
+            feedViewModel.deleteUserPost(feed, feedPost)
+            Toast.makeText(context, "The post has been deleted.", Toast.LENGTH_LONG).show()
+            dialog.dismiss()
+            feedViewModel.getUserPosts()
         })
         alert.show()
 
@@ -184,8 +189,8 @@ class FeedFragment : Fragment(){
 
     private fun checkPermissionStorage(): Boolean {
         val result = ContextCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+            context!!,
+            Manifest.permission.READ_EXTERNAL_STORAGE
         )
         return result == PackageManager.PERMISSION_GRANTED
     }
@@ -198,14 +203,15 @@ class FeedFragment : Fragment(){
 
     private fun requestPermission() {
         ActivityCompat.requestPermissions(
-                activity!!,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                PERMISSION_REQUEST_CODE
+            activity!!,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            PERMISSION_REQUEST_CODE
         )
     }
 
     override fun onPause() {
         super.onPause()
+        releaseAllPlayers()
         Log.d("state", "onPause")
     }
 
@@ -220,13 +226,13 @@ class FeedFragment : Fragment(){
         releasePlayer()
     }
 
-    private fun releasePlayer(){
+    private fun releasePlayer() {
 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE) {
             val path = data?.data
             val realPath = getRealPathFromURI(context!!, path!!)
             Log.d("realPath", realPath.toString())
@@ -238,9 +244,9 @@ class FeedFragment : Fragment(){
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String?>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
