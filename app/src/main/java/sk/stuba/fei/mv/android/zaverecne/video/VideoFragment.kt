@@ -3,6 +3,7 @@ package sk.stuba.fei.mv.android.zaverecne.video
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.View.inflate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -21,7 +22,7 @@ import sk.stuba.fei.mv.android.zaverecne.databinding.VideoFragmentBinding
 
 class VideoFragment : Fragment() {
 
-    private lateinit var viewModel: VideoViewModel
+    private lateinit var videoViewModel: VideoViewModel
     private var path : String = ""
 
     override fun onCreateView(
@@ -34,18 +35,17 @@ class VideoFragment : Fragment() {
         val application = requireNotNull(this.activity).application
 
         path= arguments!!.getString("videoUri").toString()
-        Log.d("videoPlayBack", path!!)
 
         val viewModelFactory = VideoViewModelFactory(application)
 
-        val videoViewModel = ViewModelProvider(this, viewModelFactory).get(VideoViewModel::class.java)
+        videoViewModel = ViewModelProvider(this, viewModelFactory).get(VideoViewModel::class.java)
 
         binding.exoplayerView.exo_close.setOnClickListener(View.OnClickListener {
             setRetake()
 
         })
         binding.exoplayerView.exo_save.setOnClickListener(View.OnClickListener {
-            uploadVideo()
+            uploadVideo(it)
             binding.exoplayerView.exo_save.isEnabled = false
         })
 
@@ -58,18 +58,12 @@ class VideoFragment : Fragment() {
         navController.navigate(R.id.action_videoFragment_to_feedFragment)
     }
 
-    private fun uploadVideo(){
-        val parentLayout: View = View.inflate(context, R.layout.feed_fragment, null)
-        viewModel.uploadVideo(parentLayout, path)
+    private fun uploadVideo(view: View){
+        videoViewModel.uploadVideo(view, path)
         val navController = findNavController();
         navController.navigate(R.id.action_videoFragment_to_feedFragment)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(VideoViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
 
     companion object {
         fun newInstance(path: String?) = VideoFragment()

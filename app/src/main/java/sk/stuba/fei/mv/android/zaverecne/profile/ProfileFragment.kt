@@ -2,9 +2,13 @@ package sk.stuba.fei.mv.android.zaverecne.profile
 
 import android.Manifest
 import android.app.Activity
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -12,8 +16,12 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -26,16 +34,15 @@ import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.profile_fragment.*
 import sk.stuba.fei.mv.android.zaverecne.BuildConfig
 import sk.stuba.fei.mv.android.zaverecne.R
-import sk.stuba.fei.mv.android.zaverecne.databinding.FeedFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.databinding.ProfileFragmentBinding
 import sk.stuba.fei.mv.android.zaverecne.fetchfiles.FetchFiles.getRealPathFromURI
-import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.jvm.internal.impl.descriptors.annotations.BuiltInAnnotationDescriptor
 
 
 class ProfileFragment : Fragment() {
@@ -75,8 +82,7 @@ class ProfileFragment : Fragment() {
 
         // Specify the current activity as the lifecycle owner of the binding.
         // This is necessary so that the binding can observe LiveData updates.
-        binding.setLifecycleOwner(this)
-
+        binding.lifecycleOwner = this
         binding.profileViewModel = profileViewModel
 
         binding.profileViewModel = viewModel
@@ -123,7 +129,6 @@ class ProfileFragment : Fragment() {
                         requestPermissionCamera()
                     }
                     dialog.dismiss()
-
                 })
 
                 val deleteProfilePic = btnsheet.findViewById<LinearLayout>(R.id.deletePhoto)

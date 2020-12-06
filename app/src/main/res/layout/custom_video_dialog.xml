@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/black_800">
+    <ImageView
+        android:id="@+id/closeVideoDialog"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="3dp"
+        android:src="@drawable/ic_baseline_close_24"
+        />
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/dialogPostVideo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/placeholder_video"
+        android:maxHeight="@dimen/placeholder_video"
+        android:padding="3dp"
+        app:resize_mode="fit"
+        app:controller_layout_id="@layout/exo_player_control_view_post"
+        android:visibility="visible"
+        android:layout_gravity="center"
+        app:show_buffering="always"
+         />
+
+</FrameLayout>

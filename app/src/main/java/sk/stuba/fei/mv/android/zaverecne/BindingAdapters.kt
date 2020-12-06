@@ -17,16 +17,20 @@
 
 package sk.stuba.fei.mv.android.zaverecne
 
+import android.app.Dialog
 import android.content.Context
 import android.media.AudioManager
 import android.media.Image
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -45,6 +49,8 @@ import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
 import sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback
 import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.signature.ObjectKey
 
 
 fun Context.toast(text: String) {
@@ -102,7 +108,7 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
         val imgUri = Uri.parse(thumbnailSrc)
         Glide.with(view.context)
             .load(imgUri)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .apply(
                 RequestOptions()
                     .placeholder(R.drawable.loading_animation)
@@ -114,6 +120,8 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
 
 @BindingAdapter("profile")
 fun bindProfile(view: ImageView, profileSrc: String?) {
+    Log.d("profilePic", "inside profile$profileSrc")
+
     profileSrc?.let {
         val imgUri: Uri
         //Kontrola ci uzivatel ma nastavenu profilovu fotku
@@ -124,11 +132,15 @@ fun bindProfile(view: ImageView, profileSrc: String?) {
             val fullPath = MasterRepository.mediaUrlBase + profileSrc
             imgUri = fullPath.toUri().buildUpon().scheme("http").build()
         }
+        //https://android.jlelse.eu/best-strategy-to-load-images-using-glide-image-loading-library-for-android-e2b6ba9f75b2
+        //SIGNATURE
+        //https://stackoverflow.com/questions/47886247/how-to-reload-image-in-glide-from-the-same-url
         Glide.with(view.context)
             .load(imgUri)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .apply(
                 RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .signature(ObjectKey(System.currentTimeMillis().toString()))
                     .placeholder(R.drawable.profile_picture)
                     .error(R.drawable.ic_broken_image)
 
@@ -175,6 +187,43 @@ fun setOnClick(imageView: ImageView, volume: Boolean) {
         }
     }
 }
+
+@BindingAdapter("fullScreenVideo")
+fun PlayerView.loadVideo(
+        videoSrc: String
+) {
+    Log.d("full screen", "fullScreenVideo binding")
+    val repo = MasterRepository(context)
+    videoSrc.let {
+        val trackSelection = DefaultTrackSelector(context);
+        val player = SimpleExoPlayer.Builder(context)
+                .setTrackSelector(trackSelection)
+                .build()
+        player.playWhenReady = false
+        player.repeatMode = Player.REPEAT_MODE_OFF
+        setKeepContentOnPlayerReset(true)
+        this.controllerHideOnTouch = true
+        this.controllerShowTimeoutMs = 1000
+
+        val fullUrl = repo.mediaUrlBase + videoSrc
+        val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
+        val mediaSource =
+                ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
+                        .createMediaSource(mediaItem)
+        player.setMediaSource(mediaSource)
+        player.prepare()
+
+//        player.addListener(
+//                FeedRecyclerAdapter.FeedPlayerListener(
+//                        player,
+//                        context,
+//                        callback
+//                )
+//        )
+        this.player = player
+    }
+}
+
 
 /*
     Pouzite zdroje k implementacii RecyclerView + ExoPlayer:
@@ -232,6 +281,12 @@ class FeedPlayerAdapter {
                         .createMediaSource(mediaItem)
                 player.setMediaSource(mediaSource)
                 player.prepare()
+
+//                this.setOnClickListener(View.OnClickListener {
+//                    val args = Bundle()
+//                    args.putString("videoSrc", fullUrl);
+//                    it.findNavController().navigate(R.id.action_feedFragment_to_fullScreenVideo,args)
+//                })
 
                 item_id?.let { id ->
                     if(exoPlayers.containsKey(id))

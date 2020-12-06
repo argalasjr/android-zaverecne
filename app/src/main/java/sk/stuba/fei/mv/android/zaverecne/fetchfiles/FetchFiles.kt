@@ -1,94 +1,22 @@
 package sk.stuba.fei.mv.android.zaverecne.fetchfiles
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
-import sk.stuba.fei.mv.android.zaverecne.beans.Album
-import sk.stuba.fei.mv.android.zaverecne.beans.RowItem
 import java.io.File
 import java.util.*
 
 object FetchFiles {
 
-    fun getFiles(root: File, fileType: String): List<Album> {
-        val albums = ArrayList<Album>()
-        var songs = ArrayList<File>()
-        songs = loadFiles(root, fileType)
-        val rowItems: MutableList<RowItem> = ArrayList()
-        if (!songs.isEmpty()) {
-            val songNames = arrayOfNulls<String>(songs.size)
-            val descriptions = arrayOfNulls<String>(songs.size)
-            val dateCreated = arrayOfNulls<Date>(songs.size)
-            for (i in songs.indices) {
-                var addedToAlbum = false
-                //files.add(songs.get(i));
-                songNames[i] = songs[i].name.replace(fileType, "")
-                descriptions[i] = ""
-                dateCreated[i] = getDateCreated(i, songs)
-                val item = songNames[i]?.let { descriptions[i]?.let { it1 ->
-                    dateCreated[i]?.let { it2 ->
-                        RowItem(it,
-                                it1, songs[i], it2
-                        )
-                    }
-                } }
-                val unit = "MB"
-
-                if (item != null) {
-                    item.size = getFileSize(songs[i], unit)
-                    item.parent = songs[i].parentFile
-                    rowItems.add(item)
-                }
-
-                if (i == 0) {
-                    val album = Album()
-                    if (item != null) {
-                        album.file = item.parent
-                        album.rowItems.add(item)
-                        album.name = item.parent.name
-                    }
-
-                    albums.add(album)
-                } else {
-                    for (album in albums) {
-                        if (item != null) {
-                            if (album.file == item.parent) {
-                                album.rowItems.add(item)
-                                addedToAlbum = true
-                                break
-                            }
-                        }
-                    }
-                    if (!addedToAlbum) {
-                        val album = Album()
-                        if (item != null) {
-                            album.file = item.parent
-                            album.rowItems.add(item)
-                            album.name = item.parent.name
-                        }
-
-                        albums.add(album)
-                    }
-                }
-            }
-            for (album in albums) {
-                Collections.sort(album.rowItems) { row1, row2 -> row2.dateCreated.compareTo(row1.dateCreated) }
-            }
-        }
-        return albums
-    }
-
-    private fun loadFiles(root: File, fileType: String): ArrayList<File> {
+    private fun fetchFilesByRoot(root: File, fileType: String): ArrayList<File> {
         val arrayList = ArrayList<File>()
         val files = root.listFiles()!!
         if (files.size != 0) {
             for (file in files) {
                 if (file.isDirectory) {
-                    arrayList.addAll(loadFiles(file, fileType))
+                    arrayList.addAll(fetchFilesByRoot(file, fileType))
                 } else {
                     if (file.name.endsWith(fileType)) {
                         arrayList.add(file)

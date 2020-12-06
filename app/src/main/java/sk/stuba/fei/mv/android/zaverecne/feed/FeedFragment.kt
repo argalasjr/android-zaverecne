@@ -64,7 +64,6 @@ class FeedFragment : Fragment() {
 
 
         binding.profilePic.setOnClickListener(View.OnClickListener {
-//            Log.d("Profile", "profile")
             val navController = findNavController();
             navController.navigate(R.id.action_feedFragment_to_profileFragment)
         })
