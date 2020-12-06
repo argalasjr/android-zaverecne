@@ -96,6 +96,13 @@ class ProfileFragment : Fragment() {
                 }
                 dialog.show()
 
+                val showProfilePicButton =  btnsheet.findViewById<LinearLayout>(R.id.showProfilePic)
+                showProfilePicButton.setOnClickListener(View.OnClickListener {
+                    val navController = findNavController();
+                    navController.navigate(R.id.action_profileFragment_to_profileImageView)
+                    dialog.dismiss()
+                })
+
                 val chooseGalleryButton =
                         btnsheet.findViewById<LinearLayout>(R.id.chooseGalleryProfile)
                 chooseGalleryButton.setOnClickListener(View.OnClickListener {

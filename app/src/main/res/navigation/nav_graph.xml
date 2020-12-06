@@ -76,8 +76,6 @@
         android:label="ProfileFragment" >
         <action
             android:id="@+id/action_profileFragment_to_feedFragment"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
             app:destination="@id/feedFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
@@ -87,6 +85,9 @@
         <action
             android:id="@+id/action_profileFragment_to_resetFragment"
             app:destination="@id/resetFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_profileImageView"
+            app:destination="@id/profileImageView" />
     </fragment>
     <fragment
         android:id="@+id/resetFragment"
@@ -109,8 +110,6 @@
         <action
             android:id="@+id/action_videoFragment_to_feedFragment"
             app:destination="@id/feedFragment"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
             />
     </fragment>
     <fragment
@@ -126,5 +125,16 @@
         <action
             android:id="@+id/action_cameraFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileImageView"
+        android:name="sk.stuba.fei.mv.android.zaverecne.profile.ProfileImageView"
+        android:label="ProfileImageView" >
+        <action
+            android:id="@+id/action_profileImageView_to_profileFragment"
+            app:destination="@id/profileFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 </navigation>
