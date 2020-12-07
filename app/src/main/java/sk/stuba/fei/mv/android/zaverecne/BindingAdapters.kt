@@ -17,25 +17,21 @@
 
 package sk.stuba.fei.mv.android.zaverecne
 
-import android.app.Dialog
 import android.content.Context
 import android.media.AudioManager
-import android.media.Image
 import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -49,8 +45,9 @@ import sk.stuba.fei.mv.android.zaverecne.feed.FeedRecyclerAdapter
 import sk.stuba.fei.mv.android.zaverecne.feed.PlayerStateCallback
 import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
-import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.signature.ObjectKey
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 fun Context.toast(text: String) {
@@ -110,9 +107,9 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
             .load(imgUri)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .apply(
-                RequestOptions()
-                    .placeholder(R.drawable.loading_animation)
-                    .error(R.drawable.ic_broken_image)
+                    RequestOptions()
+                            .placeholder(R.drawable.loading_animation)
+                            .error(R.drawable.ic_broken_image)
             )
             .into(view)
     }
@@ -120,15 +117,15 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
 
 @BindingAdapter("profile")
 fun bindProfile(view: ImageView, profileSrc: String?) {
-    Log.d("profilePic", "inside profile$profileSrc")
-
     profileSrc?.let {
         val imgUri: Uri
-        //Kontrola ci uzivatel ma nastavenu profilovu fotku
+        // podmienka ci uzivatel ma nastavenu profilovu fotku
         if (profileSrc.isEmpty()) {
+            // ak nema, tak sa nastavý default fotka profilu
             imgUri =
                 Uri.parse("android.resource://" + view.context.packageName + "/drawable/profile_picture");
         } else {
+            // ak má, tak priravy sa kompletná adresa pre fotku
             val fullPath = MasterRepository.mediaUrlBase + profileSrc
             imgUri = fullPath.toUri().buildUpon().scheme("http").build()
         }
@@ -138,11 +135,12 @@ fun bindProfile(view: ImageView, profileSrc: String?) {
         Glide.with(view.context)
             .load(imgUri)
             .apply(
-                RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .signature(ObjectKey(System.currentTimeMillis().toString()))
-                    .placeholder(R.drawable.profile_picture)
-                    .error(R.drawable.ic_broken_image)
+                    RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.DATA)
+                            // signature - automaticky update fotky ktora je na rovnakej url adrese
+                            .signature(ObjectKey(System.currentTimeMillis().toString()))
+                            .placeholder(R.drawable.profile_picture)
+                            .error(R.drawable.ic_broken_image)
 
             )
             .into(view)
@@ -159,11 +157,49 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         Glide.with(imgView.context)
             .load(imgUri)
             .apply(
-                RequestOptions()
-                    .placeholder(R.drawable.loading_animation)
-                    .error(R.drawable.ic_broken_image)
+                    RequestOptions()
+                            .placeholder(R.drawable.loading_animation)
+                            .error(R.drawable.ic_broken_image)
             )
             .into(imgView)
+    }
+}
+
+@BindingAdapter("date")
+fun bindDate(textView: TextView, dateCreated: String?) {
+
+    fun getDateDiff(oldDate: Date,nowDate: Date): Long {
+        val diffInMillies = nowDate.time - oldDate.time;
+        return diffInMillies
+    }
+
+    textView.let {
+        val date1: Date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateCreated)
+        val yearInMill = 31556926000
+        val millisecond: Long = getDateDiff(date1, Date())
+        val seconds = millisecond/1000
+        val minutes = seconds/60
+        val hours = minutes/60
+
+        val time: String?
+        Log.d("date", "$millisecond a $seconds")
+        if(seconds < 60){
+            time = "$seconds s"
+        }
+        else if(seconds >= 60 && minutes<60){
+            time = "$minutes min"
+        }
+        else if(minutes>=60 && hours <= 24){
+            time = "$hours h"
+        }
+        else if(hours > 24 && yearInMill > millisecond){
+            time = SimpleDateFormat("dd.MM.").format(date1)
+        }
+        else{
+            time = SimpleDateFormat("dd.MM.YYYY").format(date1)
+        }
+
+        textView.text = time
     }
 }
 
@@ -258,9 +294,9 @@ class FeedPlayerAdapter {
         @JvmStatic
         @BindingAdapter("video", "on_state_change", "item_id")
         fun PlayerView.loadVideo(
-            videoSrc: String,
-            callback: PlayerStateCallback,
-            item_id: Int? = null
+                videoSrc: String,
+                callback: PlayerStateCallback,
+                item_id: Int? = null
         ) {
             val repo = MasterRepository(context)
             videoSrc.let {
@@ -294,11 +330,11 @@ class FeedPlayerAdapter {
                     exoPlayers[id] = player
                 }
                 player.addListener(
-                    FeedRecyclerAdapter.FeedPlayerListener(
-                        player,
-                        context,
-                        callback
-                    )
+                        FeedRecyclerAdapter.FeedPlayerListener(
+                                player,
+                                context,
+                                callback
+                        )
                 )
                 this.player = player
             }

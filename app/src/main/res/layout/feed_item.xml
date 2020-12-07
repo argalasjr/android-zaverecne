@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_marginStart="2dp"
-                    android:text="@{post.created}"
+                    app:date="@{post.created}"
                     android:textColor="@color/material_gray_700"
                     android:textSize="12sp" />
 

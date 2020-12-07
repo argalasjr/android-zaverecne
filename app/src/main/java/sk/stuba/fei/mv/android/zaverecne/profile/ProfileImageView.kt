@@ -41,8 +41,13 @@ class ProfileImageView : Fragment() {
 
 
         binding.lifecycleOwner = this
+
+        // do XML pre tento fragment nastavujeme pre danu
+        // premennu profileImageViewModel (viewModel pre tento fragment)
+        // aby sme v XML pre databinding vedeli pristupit k url fotke prave prihlaseneho uzivatela
         binding.profileImageViewModel = profileImageViewModel
 
+        // nastavujeme listener pre view ktory predstavuje presmerovanie naspat na profile fragment
         binding.closeProfileImageView.setOnClickListener(View.OnClickListener {
             val navController = findNavController();
             navController.navigate(R.id.action_profileImageView_to_profileFragment)

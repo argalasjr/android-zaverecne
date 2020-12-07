@@ -79,14 +79,12 @@ class ProfileFragment : Fragment() {
             ).get(ProfileViewModel::class.java)
 
 
-
         // Specify the current activity as the lifecycle owner of the binding.
         // This is necessary so that the binding can observe LiveData updates.
         binding.lifecycleOwner = this
         binding.profileViewModel = profileViewModel
 
         binding.profileViewModel = viewModel
-
 
         binding.apply {
             backProfil.setOnClickListener(View.OnClickListener {
@@ -287,7 +285,6 @@ class ProfileFragment : Fragment() {
                 PERMISSION_REQUEST_CODE_CAM
         )
     }
-
 
     fun bitmapToFile(bitmap: Bitmap, fileNameToSave: String): File? { // File name like "image.png"
         //create a file to write bitmap data
