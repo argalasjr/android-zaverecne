@@ -17,35 +17,41 @@
 
 package sk.stuba.fei.mv.android.zaverecne
 
-import android.Manifest.permission.INTERNET
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.media.AudioManager
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.WindowManager
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import kotlinx.android.synthetic.main.feed_fragment.*
+import kotlinx.android.synthetic.main.exo_player_control_view_post.view.*
+import kotlinx.android.synthetic.main.exo_player_control_view_post_fullscreen.view.*
 import kotlinx.android.synthetic.main.feed_item.view.*
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.getVolume
 import sk.stuba.fei.mv.android.zaverecne.FeedPlayerAdapter.Companion.onVolumeChange
@@ -116,9 +122,9 @@ fun bindThumbnail(view: ImageView, thumbnailSrc: String?) {
             .load(imgUri)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .apply(
-                    RequestOptions()
-                            .placeholder(R.drawable.loading_animation)
-                            .error(R.drawable.ic_broken_image)
+                RequestOptions()
+                    .placeholder(R.drawable.loading_animation)
+                    .error(R.drawable.ic_broken_image)
             )
             .into(view)
     }
@@ -144,12 +150,12 @@ fun bindProfile(view: ImageView, profileSrc: String?) {
         Glide.with(view.context)
             .load(imgUri)
             .apply(
-                    RequestOptions()
-                            .diskCacheStrategy(DiskCacheStrategy.DATA)
-                            // signature - automaticky update fotky ktora je na rovnakej url adrese
-                            .signature(ObjectKey(System.currentTimeMillis().toString()))
-                            .placeholder(R.drawable.profile_picture)
-                            .error(R.drawable.ic_broken_image)
+                RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
+                    // signature - automaticky update fotky ktora je na rovnakej url adrese
+                    .signature(ObjectKey(System.currentTimeMillis().toString()))
+                    .placeholder(R.drawable.profile_picture)
+                    .error(R.drawable.ic_broken_image)
 
             )
             .into(view)
@@ -166,9 +172,9 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         Glide.with(imgView.context)
             .load(imgUri)
             .apply(
-                    RequestOptions()
-                            .placeholder(R.drawable.loading_animation)
-                            .error(R.drawable.ic_broken_image)
+                RequestOptions()
+                    .placeholder(R.drawable.loading_animation)
+                    .error(R.drawable.ic_broken_image)
             )
             .into(imgView)
     }
@@ -264,16 +270,16 @@ fun setOnClickMenu(imageView: ImageView, feedpost: FeedPost, feedViewModel: Feed
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
         val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
         )
         lp.setMargins(50, 0, 100, 0)
         alert.setMessage("Tento príspevok bude odstránený a už ho nebudete môcť nájsť..")
         alert.setView(linearLayout)
 
         alert.setNegativeButton(
-                "Zrušiť",
-                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+            "Zrušiť",
+            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
         alert.setPositiveButton("Odstrániť", DialogInterface.OnClickListener { dialog, which ->
             feedViewModel.deleteUserPost(imageView, feedPost)
             Toast.makeText(context, "The post has been deleted.", Toast.LENGTH_LONG).show()
@@ -328,6 +334,9 @@ class FeedPlayerAdapter {
     companion object {
         private var nowPlaying: Pair<Int, SimpleExoPlayer>? = null
         private var exoPlayers: MutableMap<Int, SimpleExoPlayer> = mutableMapOf()
+        private var mFullScreenDialog: Dialog? = null
+        private var mExoPlayerFullscreen = false
+
 
         @JvmStatic
         fun autoPlayVisible(id: Int) {
@@ -350,9 +359,9 @@ class FeedPlayerAdapter {
         @JvmStatic
         @BindingAdapter("video", "on_state_change", "item_id")
         fun PlayerView.loadVideo(
-                videoSrc: String,
-                callback: PlayerStateCallback,
-                item_id: Int? = null
+            videoSrc: String,
+            callback: PlayerStateCallback,
+            item_id: Int? = null
         ) {
             val repo = MasterRepository(context)
             videoSrc.let {
@@ -365,10 +374,50 @@ class FeedPlayerAdapter {
                 setKeepContentOnPlayerReset(true)
                 this.controllerHideOnTouch = true
                 this.controllerShowTimeoutMs = 1000
+                this.hideController()
 
-
-
+//                val parent = this.parent
+//                val activity = context as Activity
+//                fun closeFullscreenDialog() {
+////                    activity.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+//                    (this.parent as ViewGroup).removeView(this)
+//                    (parent as ConstraintLayout).addView(this);
+//                    mExoPlayerFullscreen = false;
+//                    mFullScreenDialog?.dismiss();
+////                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//                }
+//
+//                fun initFullscreenDialog() {
+////                    activity.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//                    mFullScreenDialog =
+//                        object : Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+//                            override fun onBackPressed() {
+//                                if (mExoPlayerFullscreen) closeFullscreenDialog()
+//                                super.onBackPressed()
+//                            }
+//                        }
+//                }
+//                fun openFullscreenDialog() {
+//                    this.showController()
+//                    (this.parent as ViewGroup).removeView(this)
+//                    mFullScreenDialog?.addContentView(
+//                        this, ViewGroup.LayoutParams(
+//                            ViewGroup.LayoutParams.MATCH_PARENT,
+//                            ViewGroup.LayoutParams.MATCH_PARENT
+//                        )
+//                    );
+//                    mExoPlayerFullscreen = true;
+//                    mFullScreenDialog?.show();
+////                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                }
                 val fullUrl = repo.mediaUrlBase + videoSrc
+                this.setOnClickListener(View.OnClickListener {
+                    val args = Bundle()
+                    args.putString("videoUri", fullUrl);
+                    args.putString("mode", "postVideo");
+                    it.findNavController().navigate(R.id.action_feedFragment_to_videoFragment, args)
+                })
+
                 val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
                 val mediaSource =
                     ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
@@ -383,16 +432,20 @@ class FeedPlayerAdapter {
                     exoPlayers[id] = player
                 }
                 player.addListener(
-                        FeedRecyclerAdapter.FeedPlayerListener(
-                                player,
-                                context,
-                                callback
-                        )
+                    FeedRecyclerAdapter.FeedPlayerListener(
+                        player,
+                        context,
+                        callback
+                    )
                 )
 
                 this.player = player
             }
+
         }
+
+
+
 
         @JvmStatic
         fun onViewRecycled(id: Int) {

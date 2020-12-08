@@ -184,6 +184,7 @@ class FeedFragment : Fragment() {
             Log.d("realPath", realPath.toString())
             val args = Bundle()
             args.putString("videoUri", realPath);
+            args.putString("mode", "onUpload");
             val navController = findNavController();
             navController.navigate(R.id.action_feedFragment_to_videoFragment, args)
         }

@@ -24,7 +24,7 @@ class VideoFragment : Fragment() {
 
     private lateinit var videoViewModel: VideoViewModel
     private var path : String = ""
-
+    private var mode : String = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +35,7 @@ class VideoFragment : Fragment() {
         val application = requireNotNull(this.activity).application
 
         path= arguments!!.getString("videoUri").toString()
+        mode= arguments!!.getString("mode").toString()
 
         val viewModelFactory = VideoViewModelFactory(application)
 
@@ -42,12 +43,18 @@ class VideoFragment : Fragment() {
 
         binding.exoplayerView.exo_close.setOnClickListener(View.OnClickListener {
             setRetake()
+        })
 
-        })
-        binding.exoplayerView.exo_save.setOnClickListener(View.OnClickListener {
-            uploadVideo(it)
-            binding.exoplayerView.exo_save.isEnabled = false
-        })
+        if(mode == "onUpload") {
+            binding.exoplayerView.exo_save.setOnClickListener(View.OnClickListener {
+                uploadVideo(it)
+                binding.exoplayerView.exo_save.isEnabled = false
+            })
+        }else if(mode == "postVideo"){
+            binding.exoplayerView.exo_save.visibility = View.GONE
+        }else{
+
+        }
 
         return binding.root
 
@@ -65,7 +72,6 @@ class VideoFragment : Fragment() {
         val action = VideoFragmentDirections.actionVideoFragmentToFeedFragment(shouldForceUpdateFeed)
         navController.navigate(action)
     }
-
 
     companion object {
         fun newInstance(path: String?) = VideoFragment()
