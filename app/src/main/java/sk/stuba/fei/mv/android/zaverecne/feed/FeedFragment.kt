@@ -42,9 +42,9 @@ class FeedFragment : Fragment() {
     ): View? {
         val binding = FeedFragmentBinding.inflate(inflater)
 
-        val application = requireNotNull(this.activity).application
+        val application = activity!!.application
         val viewModelFactory = FeedViewModelFactory(application)
-        val feedViewModel = ViewModelProvider(this, viewModelFactory).get(FeedViewModel::class.java)
+        val feedViewModel = ViewModelProvider(activity!!, viewModelFactory).get(FeedViewModel::class.java)
 
         binding.lifecycleOwner = this
 
