@@ -222,7 +222,7 @@ class FeedFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        releaseAllPlayers()
+
         Log.d("state", "onPause")
     }
 
@@ -233,12 +233,8 @@ class FeedFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        releaseAllPlayers()
         Log.d("state", "onStop")
-        releasePlayer()
-    }
-
-    private fun releasePlayer() {
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

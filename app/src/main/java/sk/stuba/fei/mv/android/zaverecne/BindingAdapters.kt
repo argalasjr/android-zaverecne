@@ -332,9 +332,8 @@ class FeedPlayerAdapter {
         }
 
         @JvmStatic
-        fun getVolume(): Float {
-            //for proper garbage collection
-            return exoPlayers[0]!!.volume
+        fun getVolume(): Float? {
+            return exoPlayers[0]?.volume
         }
 
     }
