@@ -38,14 +38,13 @@ class VideoFragment : Fragment() {
         mode= arguments!!.getString("mode").toString()
 
         val viewModelFactory = VideoViewModelFactory(application)
-
         videoViewModel = ViewModelProvider(this, viewModelFactory).get(VideoViewModel::class.java)
 
         binding.exoplayerView.exo_close.setOnClickListener(View.OnClickListener {
             setRetake()
         })
 
-        if(mode == "onUpload") {
+        if(mode.equals("onUpload")) {
             binding.exoplayerView.exo_save.setOnClickListener(View.OnClickListener {
                 uploadVideo(it)
                 binding.exoplayerView.exo_save.isEnabled = false

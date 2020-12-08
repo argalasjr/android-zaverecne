@@ -286,6 +286,7 @@ class CameraFragment : Fragment() {
         val args = Bundle()
         args.putString("videoUri", result.file.absolutePath);
         val navController = findNavController();
+        args.putString("mode", "onUpload");
         navController.navigate(R.id.action_cameraFragment_to_videoFragment,args)
     }
 
