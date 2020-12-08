@@ -11,6 +11,7 @@
 
 <RelativeLayout
     android:id="@+id/rellay1"
+    android:background="@drawable/profilebg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".profile.ProfileFragment">
@@ -45,8 +46,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_marginTop="16dp"
+
         android:layout_below="@id/navBar"
         android:layout_centerVertical="true"
         tools:context=".profile.ProfileFragment">
@@ -59,7 +61,7 @@
             android:background="@drawable/circle_shape"
             app:civ_border_color="@color/material_gray_400"
             app:civ_border_width="1dp"
-            app:layout_constraintBottom_toTopOf="@id/user_name"
+            app:layout_constraintBottom_toBottomOf="@id/container"
             app:layout_constraintEnd_toEndOf="@+id/container"
             app:layout_constraintStart_toStartOf="@+id/container"
             app:profile="@{profileViewModel.loggedInUserView.profile}" />
@@ -93,27 +95,7 @@
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintStart_toStartOf="@+id/profile_image" />
 
-        <TextView
-            android:id="@+id/user_name"
-            android:text="@{profileViewModel.loggedInUserView.username}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/profile_image"
-            app:layout_constraintEnd_toEndOf="@+id/container"
-            app:layout_constraintStart_toStartOf="@+id/container"
-            android:textSize="32sp">
-        </TextView>
 
-    <TextView
-        android:id="@+id/user_email"
-        android:text="@{profileViewModel.loggedInUserView.email}"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/user_name"
-        app:layout_constraintEnd_toEndOf="@+id/container"
-        app:layout_constraintStart_toStartOf="@+id/container"
-        android:textSize="16sp">
-    </TextView>
 
 
 
@@ -132,17 +114,75 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/container"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
         android:layout_centerVertical="true"
+        tools:context=".profile.ProfileFragment">
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{profileViewModel.loggedInUserView.username}"
+            android:textSize="30sp"
+            app:layout_constraintStart_toStartOf="@+id/container2"
+            app:layout_constraintTop_toTopOf="@id/container2" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/container2"
+        android:layout_centerVertical="true"
+        tools:context=".profile.ProfileFragment">
+
+        <ImageView
+            android:id="@+id/emailIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="@+id/container3"
+            app:layout_constraintTop_toTopOf="@id/container3"
+            android:src="@drawable/ic_baseline_mail_outline_24" />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{profileViewModel.loggedInUserView.email}"
+            android:textSize="16sp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toEndOf="@+id/emailIcon"
+            app:layout_constraintBottom_toBottomOf="@id/container3"
+            app:layout_constraintTop_toTopOf="@id/container3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/container3"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="100dp"
         tools:context=".profile.ProfileFragment">
 
     <Button
         android:id="@+id/link_change_pass_button"
-
+        android:layout_marginStart="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/change_password"
@@ -158,6 +198,7 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
         android:text="@string/logout"
         app:layout_constraintTop_toBottomOf="@id/link_change_pass_button"
         app:layout_constraintEnd_toEndOf="parent"
