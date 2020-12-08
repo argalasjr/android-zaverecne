@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.network.UserResult
@@ -111,6 +112,14 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
                             )
                     snackbar.show()
                     _status.value = ApiStatus.DONE
+
+                    val feedPosts = _posts.value
+                    feedPosts?.let {
+                        val newList : ArrayList<FeedPost> = arrayListOf()
+                        newList.addAll(it)
+                        newList.remove(feedPost)
+                        _posts.value = newList
+                    }
                 }
             } catch (e: Exception) {
                     _status.value = ApiStatus.ERROR
@@ -119,7 +128,13 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getUserPosts() {
+        getUserPosts(null)
+    }
+
+    fun getUserPosts(delayMs: Long?) {
         viewModelScope.launch {
+            if(delayMs != null)
+                delay(delayMs)
             _status.value = ApiStatus.LOADING
             try {
                 val activeUser = repo.dbExistsActiveUser()

@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialog
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialView.OnActionSelectedListener
@@ -49,6 +50,11 @@ class FeedFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = feedViewModel
+
+        val args: FeedFragmentArgs by navArgs()
+        if(args.shouldForceUpdateFeed) {
+            feedViewModel.getUserPosts(5000L)
+        }
 
         binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener{
             showMenu(feedViewModel, it)
@@ -111,6 +117,7 @@ class FeedFragment : Fragment() {
                 else -> false
             }
         })
+
         return binding.root
     }
 
@@ -158,7 +165,7 @@ class FeedFragment : Fragment() {
             feedViewModel.deleteUserPost(feed, feedPost)
             Toast.makeText(context, "The post has been deleted.", Toast.LENGTH_LONG).show()
             dialog.dismiss()
-            feedViewModel.getUserPosts()
+//            feedViewModel.getUserPosts()
         })
         alert.show()
 

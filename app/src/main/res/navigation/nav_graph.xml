@@ -27,34 +27,36 @@
         android:id="@+id/feedFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.feed.FeedFragment"
         android:label="feed_fragment"
-        tools:layout="@layout/feed_fragment" >
+        tools:layout="@layout/feed_fragment">
+        <argument
+            android:name="shouldForceUpdateFeed"
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/action_feedFragment_to_profileFragment"
             app:destination="@id/profileFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_feedFragment_to_cameraFragment"
             app:destination="@id/cameraFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_feedFragment_to_videoFragment"
             app:destination="@id/videoFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            />
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.auth.login.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_feedFragment"
+            app:destination="@id/feedFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            app:destination="@id/feedFragment" />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
@@ -62,7 +64,7 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.auth.register.RegisterFragment"
-        android:label="RegisterFragment" >
+        android:label="RegisterFragment">
         <action
             android:id="@+id/action_registerFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
@@ -73,15 +75,15 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.profile.ProfileFragment"
-        android:label="ProfileFragment" >
+        android:label="ProfileFragment">
         <action
             android:id="@+id/action_profileFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            app:destination="@id/loginFragment" />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_profileFragment_to_resetFragment"
             app:destination="@id/resetFragment" />
@@ -92,36 +94,35 @@
     <fragment
         android:id="@+id/resetFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.auth.reset.ResetFragment"
-        android:label="ResetFragment" >
+        android:label="ResetFragment">
         <action
             android:id="@+id/action_resetFragment_to_profileFragment"
+            app:destination="@id/profileFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            app:destination="@id/profileFragment" />
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.video.VideoFragment"
         android:label="video_fragment"
-        tools:layout="@layout/video_fragment" >
+        tools:layout="@layout/video_fragment">
         <action
             android:id="@+id/action_videoFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
         <action
             android:id="@+id/action_videoFragment_to_feedFragment"
-            app:destination="@id/feedFragment"
-            />
+            app:destination="@id/feedFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="sk.stuba.fei.mv.android.zaverecne.camera.CameraFragment"
         android:label="camera_fragment"
-        tools:layout="@layout/camera_fragment" >
+        tools:layout="@layout/camera_fragment">
         <action
             android:id="@+id/action_cameraFragment_to_videoFragment"
+            app:destination="@id/videoFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            app:destination="@id/videoFragment" />
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_cameraFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
@@ -129,12 +130,11 @@
     <fragment
         android:id="@+id/profileImageView"
         android:name="sk.stuba.fei.mv.android.zaverecne.profile.ProfileImageView"
-        android:label="ProfileImageView" >
+        android:label="ProfileImageView">
         <action
             android:id="@+id/action_profileImageView_to_profileFragment"
             app:destination="@id/profileFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true"
-            />
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
