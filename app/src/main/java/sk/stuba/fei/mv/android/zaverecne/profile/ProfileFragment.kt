@@ -22,6 +22,7 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -172,18 +173,16 @@ class ProfileFragment : Fragment() {
                     null
                 }
                 // Continue only if the File was successfully created
-                photoFile?.also {
-
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                            context!!,
-                            BuildConfig.APPLICATION_ID + ".fileprovider",
-                            it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+//                photoFile?.also {
+//                    val photoURI: Uri = FileProvider.getUriForFile(
+//                            context!!,
+//                            BuildConfig.APPLICATION_ID + ".fileprovider",
+//                            it
+//                    )
+//                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     takePictureIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     startActivityForResult(takePictureIntent, REQUEST_CODE_CAM)
-
-                }
+//                }
             }
         }
     }
@@ -203,12 +202,16 @@ class ProfileFragment : Fragment() {
             val file = File(realPath)
             Log.d("filePath", file.absolutePath);
             viewModel.uploadProfilePhoto(container, file)
-
         }
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_CAM && data != null){
-//            imageView.setImageBitmap(data.extras?.get("data") as Bitmap)
-            val file = bitmapToFile(data.extras?.get("data") as Bitmap, currentPhotoPath)
-            viewModel.uploadProfilePhoto(container, file)
+            val extras = data.extras;
+            Log.d("data", extras.toString())
+            if(extras != null) {
+                val file = bitmapToFile(data.extras?.get("data") as Bitmap, currentPhotoPath)
+                viewModel.uploadProfilePhoto(container, file)
+            }else{
+                Toast.makeText(context, "Fail to capture Image", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -219,7 +222,6 @@ class ProfileFragment : Fragment() {
             grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.e("value", "Permission Granted, Now you can use local drive .")

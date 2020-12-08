@@ -22,6 +22,7 @@ import android.media.AudioManager
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -47,7 +48,6 @@ import sk.stuba.fei.mv.android.zaverecne.feed.TopSpacingItemDecoration
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 fun Context.toast(text: String) {
@@ -168,7 +168,7 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
 @BindingAdapter("date")
 fun bindDate(textView: TextView, dateCreated: String?) {
 
-    fun getDateDiff(oldDate: Date,nowDate: Date): Long {
+    fun getDateDiff(oldDate: Date, nowDate: Date): Long {
         val diffInMillies = nowDate.time - oldDate.time;
         return diffInMillies
     }
@@ -221,42 +221,6 @@ fun setOnClick(imageView: ImageView, volume: Boolean) {
             it.setBackgroundResource(R.drawable.ic_baseline_volume_up_24)
             onVolumeChange(!curr_volume)
         }
-    }
-}
-
-@BindingAdapter("fullScreenVideo")
-fun PlayerView.loadVideo(
-        videoSrc: String
-) {
-    Log.d("full screen", "fullScreenVideo binding")
-    val repo = MasterRepository(context)
-    videoSrc.let {
-        val trackSelection = DefaultTrackSelector(context);
-        val player = SimpleExoPlayer.Builder(context)
-                .setTrackSelector(trackSelection)
-                .build()
-        player.playWhenReady = false
-        player.repeatMode = Player.REPEAT_MODE_OFF
-        setKeepContentOnPlayerReset(true)
-        this.controllerHideOnTouch = true
-        this.controllerShowTimeoutMs = 1000
-
-        val fullUrl = repo.mediaUrlBase + videoSrc
-        val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
-        val mediaSource =
-                ProgressiveMediaSource.Factory(DefaultHttpDataSourceFactory("demo"))
-                        .createMediaSource(mediaItem)
-        player.setMediaSource(mediaSource)
-        player.prepare()
-
-//        player.addListener(
-//                FeedRecyclerAdapter.FeedPlayerListener(
-//                        player,
-//                        context,
-//                        callback
-//                )
-//        )
-        this.player = player
     }
 }
 
@@ -318,11 +282,8 @@ class FeedPlayerAdapter {
                 player.setMediaSource(mediaSource)
                 player.prepare()
 
-//                this.setOnClickListener(View.OnClickListener {
-//                    val args = Bundle()
-//                    args.putString("videoSrc", fullUrl);
-//                    it.findNavController().navigate(R.id.action_feedFragment_to_fullScreenVideo,args)
-//                })
+                this.setOnClickListener(View.OnClickListener {
+                })
 
                 item_id?.let { id ->
                     if(exoPlayers.containsKey(id))
