@@ -81,6 +81,7 @@ class FeedFragment : Fragment() {
         binding.swiperefresh.setOnRefreshListener {
                 releaseAllPlayers()
                 feedViewModel.getUserPosts()
+                feedViewModel.getUserPhotoProfile()
                 binding.swiperefresh.isRefreshing = false
         }
 

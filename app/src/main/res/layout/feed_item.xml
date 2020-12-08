@@ -138,16 +138,6 @@
             app:on_state_change="@{callback}"
             app:video="@{post.videoSrc}" >
 
-            <ProgressBar
-                android:id="@+id/progressBarBuffering"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:visibility="gone"
-                android:indeterminate="true"
-                android:layout_marginHorizontal="2dp"/>
-
             <ImageView
                 android:id="@+id/volumeView"
                 android:layout_width="wrap_content"

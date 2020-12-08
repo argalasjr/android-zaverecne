@@ -69,7 +69,6 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener, private 
 
         override fun onVideoDurationRetrieved(duration: Long, player: Player) {
             binding.loadingPanel.visibility = View.GONE
-            binding.progressBarBuffering.visibility = View.GONE
             binding.feedPostVideo.visibility = View.VISIBLE
             binding.loadingPanel.stopShimmer()
             Log.d("holder", "on video duration retrieved - callback")
@@ -77,7 +76,6 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener, private 
 
         override fun onVideoBuffering(player: Player) {
             Log.d("holder", "on video buffering - callback")
-            binding.progressBarBuffering.visibility = View.VISIBLE
         }
 
         override fun onStartedPlaying(player: Player) {

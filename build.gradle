@@ -18,6 +18,7 @@ buildscript {
         google_services_version = "4.3.4"
         firebase_crashlytics_version = "2.4.1"
         dataBindingCompilerVersion = gradleVersion // Always need to be the same.
+        work_version = "2.4.0"
     }
     repositories {
         google()

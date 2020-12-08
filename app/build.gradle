@@ -116,6 +116,9 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
     apply plugin: "androidx.navigation.safeargs.kotlin"
 
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
+
     //LeakCanary
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }

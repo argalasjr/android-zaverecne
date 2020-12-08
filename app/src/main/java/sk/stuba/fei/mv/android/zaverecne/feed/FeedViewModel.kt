@@ -1,16 +1,18 @@
 package sk.stuba.fei.mv.android.zaverecne.feed
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.feed_fragment.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import sk.stuba.fei.mv.android.zaverecne.ApiStatus
 import sk.stuba.fei.mv.android.zaverecne.network.UserResult
 import sk.stuba.fei.mv.android.zaverecne.repository.MasterRepository
@@ -33,6 +35,10 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 
     val userProfile: LiveData<UserResult>
         get() = _userProfile
+
+    var isNetworkAvailable = MutableLiveData<Boolean>()
+
+    val context: Context = application.applicationContext
 
 
 //    fun test() {
@@ -78,10 +84,17 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
 //        test()
         getUserPosts()
         getUserPhotoProfile()
-
     }
 
-    private fun getUserPhotoProfile() {
+    private fun hasNetworkAvailable(context: Context): Boolean {
+        val service = Context.CONNECTIVITY_SERVICE
+        val manager = context.getSystemService(service) as ConnectivityManager?
+        val network = manager?.activeNetworkInfo
+        Log.d("classTag", "hasNetworkAvailable: ${(network != null)}")
+        return (network != null)
+    }
+
+     fun getUserPhotoProfile() {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
@@ -132,32 +145,51 @@ class FeedViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getUserPosts(delayMs: Long?) {
-        viewModelScope.launch {
-            if(delayMs != null)
-                delay(delayMs)
-            _status.value = ApiStatus.LOADING
-            try {
-                val activeUser = repo.dbExistsActiveUser()
-                activeUser?.let {
-                    val userPosts = repo.fetchUserPosts(activeUser.token)
-                    val feedPosts: ArrayList<FeedPost> = arrayListOf()
-                    userPosts?.forEach { userPost ->
-                        val thumbnail: String = "" // TODO: add video thumbnail
-                        val title: String = "PLACEHOLDER" // TODO: add video title
-                        val post = FeedPost(userPost.postid, userPost.username, userPost.videourl, userPost.created, title, userPost.profile,)
-                        feedPosts.add(post)
-                    }
-                    _posts.value = feedPosts
-                    _status.value = ApiStatus.DONE
-                }
+        if(hasNetworkAvailable(context)) {
+            viewModelScope.launch {
+                if (delayMs != null)
+                    delay(delayMs)
+                _status.value = ApiStatus.LOADING
+                Log.d("status", "loading")
 
-            } catch (e: Exception) {
-                _status.value = ApiStatus.ERROR
-                _posts.value = ArrayList()
+                try {
+                    val activeUser = repo.dbExistsActiveUser()
+                    activeUser?.let {
+                        val userPosts = repo.fetchUserPosts(activeUser.token)
+                        val feedPosts: ArrayList<FeedPost> = arrayListOf()
+                        userPosts?.forEach { userPost ->
+                            val thumbnail: String = "" // TODO: add video thumbnail
+                            val title: String = "PLACEHOLDER" // TODO: add video title
+                            val post = FeedPost(
+                                userPost.postid,
+                                userPost.username,
+                                userPost.videourl,
+                                userPost.created,
+                                title,
+                                userPost.profile,
+                            )
+                            feedPosts.add(post)
+                        }
+                        _posts.value = feedPosts
+                        _status.value = ApiStatus.DONE
+                        Log.d("status", "done")
+
+                    }
+
+                } catch (e: Exception) {
+                    Log.d("status", "error")
+                    _status.value = ApiStatus.ERROR
+                    _posts.value = ArrayList()
+                }
             }
+        }else{
+            _status.value = ApiStatus.RETRY
+            Log.d("status", "retry")
 
         }
     }
+
+
 }
 
 

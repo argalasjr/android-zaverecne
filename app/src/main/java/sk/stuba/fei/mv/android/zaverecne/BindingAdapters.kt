@@ -17,6 +17,7 @@
 
 package sk.stuba.fei.mv.android.zaverecne
 
+import android.Manifest.permission.INTERNET
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -25,6 +26,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -87,6 +89,10 @@ fun bindStatusFeed(statusImageView: View, status: ApiStatus?) {
         }
         ApiStatus.DONE -> {
             statusImageView.visibility = View.GONE
+        }
+        ApiStatus.RETRY -> {
+            statusImageView.context.toast("No internet connection")
+            statusImageView.visibility = View.VISIBLE
         }
     }
 }
@@ -360,6 +366,8 @@ class FeedPlayerAdapter {
                 this.controllerHideOnTouch = true
                 this.controllerShowTimeoutMs = 1000
 
+
+
                 val fullUrl = repo.mediaUrlBase + videoSrc
                 val mediaItem: MediaItem = MediaItem.fromUri(Uri.parse(fullUrl))
                 val mediaSource =
@@ -368,8 +376,6 @@ class FeedPlayerAdapter {
                 player.setMediaSource(mediaSource)
                 player.prepare()
 
-                this.setOnClickListener(View.OnClickListener {
-                })
 
                 item_id?.let { id ->
                     if(exoPlayers.containsKey(id))
@@ -383,6 +389,7 @@ class FeedPlayerAdapter {
                                 callback
                         )
                 )
+
                 this.player = player
             }
         }

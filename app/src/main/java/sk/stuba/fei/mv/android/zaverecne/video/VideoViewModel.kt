@@ -48,6 +48,7 @@ class VideoViewModel(private val masterRepository: MasterRepository) : ViewModel
                                 Snackbar.LENGTH_LONG
                             )
                         snackbar.show()
+                        _status.value = ApiStatus.DONE
                         view.findNavController().navigate(R.id.action_videoFragment_to_feedFragment)
                     }
                 } catch (e: Exception) {
