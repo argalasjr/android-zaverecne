@@ -60,8 +60,7 @@ class VideoFragment : Fragment() {
 
     private fun uploadVideo(view: View){
         videoViewModel.uploadVideo(view, path)
-        val navController = findNavController();
-        navController.navigate(R.id.action_videoFragment_to_feedFragment)
+
     }
 
 

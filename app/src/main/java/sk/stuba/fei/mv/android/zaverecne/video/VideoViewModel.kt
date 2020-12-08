@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -47,6 +48,7 @@ class VideoViewModel(private val masterRepository: MasterRepository) : ViewModel
                                 Snackbar.LENGTH_LONG
                             )
                         snackbar.show()
+                        view.findNavController().navigate(R.id.action_videoFragment_to_feedFragment)
                     }
                 } catch (e: Exception) {
                     _status.value = ApiStatus.ERROR

@@ -19,6 +19,9 @@
         <variable
             name="volumeState"
             type="boolean"/>
+        <variable
+            name="viewModel"
+            type="sk.stuba.fei.mv.android.zaverecne.feed.FeedViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,6 +99,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_margin="4dp"
                 android:src="@drawable/ic_baseline_more_horiz_24"
+                app:feedPost="@{post}"
+                app:viewModel="@{viewModel}"
                 />
 
             <!--                <TextView-->

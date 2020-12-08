@@ -51,8 +51,8 @@ class FeedFragment : Fragment() {
         binding.viewModel = feedViewModel
 
         binding.feed.adapter = FeedRecyclerAdapter(FeedRecyclerAdapter.OnClickListener{
-            showMenu(feedViewModel, it)
-        })
+        }, feedViewModel)
+
 
         //automaticky prehra aktualne video na obrazovke pri scrollovani
         binding.feed.addOnScrollListener(FeedRecyclerAdapter.FeedScrollListener())
@@ -114,75 +114,6 @@ class FeedFragment : Fragment() {
         return binding.root
     }
 
-
-    fun showMenu(feedViewModel: FeedViewModel, feedPost: FeedPost) {
-        val dialog = RoundedBottomSheetDialog(context!!)
-        val btnsheet = layoutInflater.inflate(R.layout.bottom_sheet_dialog_fragment, null)
-        dialog.setContentView(btnsheet)
-        btnsheet.setOnClickListener {
-        }
-        dialog.show()
-
-        val deletePostBtn =
-            btnsheet.findViewById<LinearLayout>(R.id.deletePostButton)
-        deletePostBtn.setOnClickListener(View.OnClickListener {
-            deleteVideoDialog(feedViewModel, feedPost)
-            dialog.dismiss()
-        })
-
-        val sharePostBtn =
-            btnsheet.findViewById<LinearLayout>(R.id.shareButtonPost)
-        sharePostBtn.setOnClickListener(View.OnClickListener {
-            val url = MasterRepository.mediaUrlBase + feedPost.videoSrc
-            shareVideo(url)
-            dialog.dismiss()
-        })
-    }
-
-    private fun deleteVideoDialog(feedViewModel: FeedViewModel, feedPost: FeedPost) {
-        val alert: AlertDialog.Builder = AlertDialog.Builder(context!!)
-        val linearLayout = LinearLayout(context)
-        linearLayout.orientation = LinearLayout.VERTICAL
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        lp.setMargins(50, 0, 100, 0)
-        alert.setMessage("Tento príspevok bude odstránený a už ho nebudete môcť nájsť..")
-        alert.setView(linearLayout)
-
-        alert.setNegativeButton(
-            "Zrušiť",
-            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
-        alert.setPositiveButton("Odstrániť", DialogInterface.OnClickListener { dialog, which ->
-            feedViewModel.deleteUserPost(feed, feedPost)
-            Toast.makeText(context, "The post has been deleted.", Toast.LENGTH_LONG).show()
-            dialog.dismiss()
-            feedViewModel.getUserPosts()
-        })
-        alert.show()
-
-    }
-
-    fun shareVideo(url: String?) {
-        //2
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            //3
-            type = "video/mp4"
-            //4
-            putExtra(Intent.EXTRA_TEXT, url)
-            //5
-//            val uri = Uri.parse(url)
-//            putExtra(Intent.EXTRA_STREAM, uri)
-//            //6
-//            val videoUrl = URL(url)
-//            clipData = ClipData.newUri(context.contentResolver, context.getString(R.string.app_name), FileProvider.getUriForFile(context, FILE_PROVIDER, videoUrl))
-            //7
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-        //8
-        context?.startActivity(Intent.createChooser(intent, null))
-    }
 
     private fun captureVideo() {
         // Permission has already been granted
