@@ -21,7 +21,7 @@ import sk.stuba.fei.mv.android.zaverecne.R
 import sk.stuba.fei.mv.android.zaverecne.databinding.FeedItemBinding
 import sk.stuba.fei.mv.android.zaverecne.toast
 
-class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAdapter<FeedPost,
+class FeedRecyclerAdapter(private val onClickListener: OnClickListener, private val feedViewModel: FeedViewModel) : ListAdapter<FeedPost,
         FeedRecyclerAdapter.FeedPostViewHolder>(DiffCallback) {
 
     override fun onViewRecycled(holder: FeedPostViewHolder) {
@@ -36,16 +36,12 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 
     override fun onBindViewHolder(holder: FeedPostViewHolder, position: Int) {
         val feedPost = getItem(position)
-//        holder.itemView.setOnClickListener {
-//            onClickListener.onClick(feedPost)
-//        }
-        holder.itemView.postMoreButton.setOnClickListener {
+        holder.itemView.setOnClickListener {
             onClickListener.onClick(feedPost)
         }
 
-        holder.bind(feedPost)
+        holder.bind(feedPost,feedViewModel)
 //        Log.d("feedPost",  "Holder.oldPosition " +holder.oldPosition.toString() + "\n Post id" + feedPost.postId + "\n User name" + feedPost.username)
-//        Log.d("feedPost",  "holder.layoutPosition. " +holder.layoutPosition.toString() + "\n isRecyclable " + holder.isRecyclable + "\n itemId " + holder.itemId )
     }
 
     class FeedScrollListener : RecyclerView.OnScrollListener() {
@@ -61,13 +57,14 @@ class FeedRecyclerAdapter(private val onClickListener: OnClickListener) : ListAd
 
     class FeedPostViewHolder(private val binding: FeedItemBinding) :
         RecyclerView.ViewHolder(binding.root), PlayerStateCallback {
-        fun bind(feedPost: FeedPost) {
+        fun bind(feedPost: FeedPost, feedViewModel: FeedViewModel) {
             binding.post = feedPost
             binding.loadingPanel.startShimmer()
             binding.callback = this@FeedPostViewHolder
             binding.itemId = adapterPosition
-            binding.executePendingBindings()
+            binding.viewModel = feedViewModel
             binding.volumeState = FeedPlayerAdapter.getVolume() != 0f
+            binding.executePendingBindings()
         }
 
         override fun onVideoDurationRetrieved(duration: Long, player: Player) {
