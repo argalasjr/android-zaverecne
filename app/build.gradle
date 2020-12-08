@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.0"
     defaultConfig {
         applicationId "sk.stuba.fei.mv.android.zaverecne"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
